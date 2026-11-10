@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 350" role="img" aria-label="Ornamental Tibetan-inspired spectral guardian">
+<defs><radialGradient id="halo"><stop stop-color="#f2bcff" stop-opacity=".8"/><stop offset=".5" stop-color="#8b86ee" stop-opacity=".25"/><stop offset="1" stop-color="#1a134b" stop-opacity="0"/></radialGradient><linearGradient id="chrome" x2=".7" y2="1"><stop stop-color="#fff"/><stop offset=".25" stop-color="#e3b9fd"/><stop offset=".46" stop-color="#6c78c6"/><stop offset=".66" stop-color="#f6e1ff"/><stop offset=".85" stop-color="#64a5cc"/><stop offset="1" stop-color="#f8e6ff"/></linearGradient><radialGradient id="face" cx=".25" cy=".3"><stop stop-color="#4b79b9"/><stop offset=".6" stop-color="#282e68"/><stop offset="1" stop-color="#120b35"/></radialGradient><filter id="glow"><feGaussianBlur stdDeviation="8"/></filter></defs>
+<circle cx="240" cy="166" r="153" fill="url(#halo)"/>
+<g opacity=".85" stroke="url(#chrome)" fill="none">
+<ellipse cx="235" cy="165" rx="207" ry="80" stroke-width="4" transform="rotate(-19 235 165)"/><ellipse cx="235" cy="165" rx="205" ry="75" stroke-width="2" transform="rotate(24 235 165)"/>
+<path d="M8 174Q86 75 129 117Q192 15 241 70Q305-10 354 106Q405 47 468 178" stroke-width="5"/>
+</g>
+<path d="M121 132Q86 92 85 30L148 88Q179 15 202 7L234 74 275 1 304 83 378 25 359 112 420 62 389 162" fill="#1e1c61" stroke="url(#chrome)" stroke-width="8"/>
+<g fill="#f6ddf9" stroke="#8760b9" stroke-width="3"><circle cx="131" cy="76" r="15"/><circle cx="210" cy="37" r="15"/><circle cx="273" cy="34" r="15"/><circle cx="348" cy="77" r="15"/></g>
+<path d="M119 139Q105 195 155 255L198 313Q245 346 295 311L331 256Q384 170 349 129Q291 80 240 104Q179 79 119 139Z" fill="url(#face)" stroke="url(#chrome)" stroke-width="7"/>
+<path d="M137 163Q169 126 214 172Q170 195 137 163Z M262 172Q308 124 349 164Q314 195 262 172Z" fill="#ffa2e4" stroke="url(#chrome)" stroke-width="5"/>
+<path d="M146 167Q175 148 204 171 M273 171Q310 146 341 168" stroke="#101332" stroke-width="9" fill="none"/>
+<circle cx="240" cy="130" r="26" fill="#edd5ff" stroke="#ab79df" stroke-width="5"/><circle cx="240" cy="130" r="13" fill="#452754"/><circle cx="239" cy="127" r="6" fill="#fff"/>
+<path d="M216 196Q243 162 266 197L254 233 224 233Z" fill="#4f4b98" stroke="url(#chrome)" stroke-width="5"/>
+<path d="M165 245Q238 215 311 246L294 279Q237 315 183 282Z" fill="#090a23" stroke="#ffd5f3" stroke-width="6"/>
+<path d="M169 247L191 290 208 247 224 286 239 246 253 286 274 247 291 284 309 249" fill="#fff6ff" stroke="#efd5ff" stroke-width="2"/>
+<path d="M184 295Q238 275 290 295L264 317Q234 323 212 314Z" fill="#da75a7" stroke="#ffd8ef" stroke-width="3"/>
+<path d="M129 223Q87 189 70 246Q131 245 162 281 M342 225Q398 195 416 252Q361 247 321 283" fill="none" stroke="url(#chrome)" stroke-width="14"/>
+<g fill="#fff" stroke="#e9bfff" stroke-width="1"><path d="M37 93l6 22 22 6-22 6-6 22-6-22-22-6 22-6z"/><path d="M427 53l6 25 25 6-25 6-6 25-6-25-25-6 25-6z"/><path d="M397 286l5 17 17 5-17 5-5 17-5-17-17-5 17-5z"/></g>
+</svg>
