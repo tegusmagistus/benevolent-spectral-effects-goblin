@@ -1,0 +1,3 @@
+[build]
+  publish = "."
+# No build command: this is a static application.
