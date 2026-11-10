@@ -39,9 +39,12 @@ body {
 .stage-top { background:#20233c!important; }
 .stage-background { background: #0b1020; }
 .monitor-unit { background:linear-gradient(120deg,#4244654d,#12192b 52%,#41416650)!important; }
-.guardian-portrait img {
-  object-fit:contain;
-  filter:contrast(1.24) brightness(.79) saturate(1.08) drop-shadow(0 0 14px #b99fea);
+ .guardian-portrait img {
+  object-fit:cover;
+  object-position:51% 50%;
+  mask-image:radial-gradient(ellipse at 52% 51%,#000 39%,#000d 55%,transparent 82%);
+  -webkit-mask-image:radial-gradient(ellipse at 52% 51%,#000 39%,#000d 55%,transparent 82%);
+  filter:contrast(1.2) brightness(.87) saturate(1.06) drop-shadow(0 0 14px #b99fea);
 }
 .sidebar {
   background:linear-gradient(160deg,#24253d,#11172a 63%,#191d33)!important;
@@ -197,6 +200,7 @@ body {
     grid-column:1;
     grid-row:1;
     position:sticky!important;
+    align-self:start!important;
     top:env(safe-area-inset-top, 0px)!important;
     z-index:75!important;
     margin:0!important;
