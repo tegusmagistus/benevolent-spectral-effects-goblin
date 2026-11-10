@@ -38,3 +38,4 @@ if(existsSync('source-assets')){const parts=readdirSync('source-assets').filter(
 if(!existsSync('public/assets/guardian-reference.webp'))throw Error('Reference artwork is missing');
 if(createHash('sha256').update(readFileSync('public/assets/guardian-reference.webp')).digest('hex')!=='b45be9c7d5f8e8c7a7f22f1a433623bd1f363f5cda22025e92bd07ebda2f52e6')throw Error('Reference artwork checksum mismatch');
 writeFileSync(path,html);console.log('BSEG 008 applied: reference artwork, pinned preview, core FX, phone panels.');
+await import('./repair-gpu.mjs');
