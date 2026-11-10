@@ -3,22 +3,40 @@ on:
   push:
     branches: [fix/mobile-reference-console]
 permissions:
-  contents: read
+  contents: write
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
-      - name: Prepare and check application
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Prepare application
+        run: node prepare-site.mjs
+      - name: Install browser test tools
         run: |
-          node prepare-site.mjs
-          if [ -f apply-console.mjs ]; then node apply-console.mjs; fi
-          node -e 'const fs=require("fs"),h=fs.readFileSync("public/index.html","utf8"); for(const m of h.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g)){if(m[1].trim())new Function(m[1]);} console.log("JavaScript parse check passed");'
+          npm install --no-save --package-lock=false playwright-core@1.56.1
+          if ! command -v ffmpeg >/dev/null; then sudo apt-get update -qq && sudo apt-get install -y ffmpeg; fi
+      - name: Create local video fixture
+        run: ffmpeg -loglevel error -f lavfi -i testsrc2=size=320x180:rate=15 -f lavfi -i sine=frequency=440:sample_rate=44100 -t 2 -c:v libx264 -pix_fmt yuv420p -c:a aac -y tests/motion.mp4
+      - name: Verify rendering, layouts, import and export
+        run: node tests/verify-console.cjs
+      - name: Save verified generated public files
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add public/index.html public/console-pro.css public/assets/guardian-reference.webp
+          if ! git diff --cached --quiet; then git commit -m 'Save browser-verified BSEG 008 public build'; git push origin HEAD:fix/mobile-reference-console; fi
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: console-review-build
           path: |
             public/
+            test-results/
+            tests/verify-console.cjs
             prepare-site.mjs
             wrangler.jsonc
             apply-console.mjs

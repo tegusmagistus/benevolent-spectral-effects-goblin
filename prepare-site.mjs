@@ -1,4 +1,4 @@
-/** Prepare the existing BSEG app for Cloudflare Workers. No app rebuild or redesign. */
+/** Prepare the preserved BSEG app and apply its responsive console extension. */
 import { createHash } from 'node:crypto';
 import { readFileSync, writeFileSync, existsSync, mkdirSync, statSync } from 'node:fs';
 import { resolve, dirname, sep } from 'node:path';
@@ -14,7 +14,6 @@ const required = new Set([
 ]);
 
 function prepare() {
-  // Once imported, publish the actual editable source, not a fresh copy over it.
   const complete = [...required].every(name => {
     const file = resolve(root, name);
     return existsSync(file) && statSync(file).isFile() && statSync(file).size > 0;
@@ -80,6 +79,7 @@ function prepare() {
 
 try {
   prepare();
+  if (existsSync('apply-console.mjs')) await import('./apply-console.mjs');
   console.log('Cloudflare Workers settings: build = node prepare-site.mjs; deploy = npx wrangler deploy; root = repository root.');
 } catch (error) {
   console.error('BSEG preparation stopped: ' + error.message);
