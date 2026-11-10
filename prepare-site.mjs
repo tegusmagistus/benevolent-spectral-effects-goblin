@@ -1,6 +1,6 @@
-/** Unpack the delivered BSEG build without rebuilding or altering the app. */
+/** Prepare the existing BSEG app for Cloudflare Workers. No app rebuild or redesign. */
 import { createHash } from 'node:crypto';
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync, statSync } from 'node:fs';
 import { resolve, dirname, sep } from 'node:path';
 import { inflateRawSync } from 'node:zlib';
 
@@ -13,13 +13,28 @@ const required = new Set([
   'assets/liquid-silver.webp', 'assets/chrome-frame.png'
 ]);
 
-try {
-  if (!existsSync(archive)) throw new Error(
-    'Upload the original BSEG_Moon_Relic_Web.zip to the repository root, beside this script. Do not unzip it or rename it.'
-  );
+function prepare() {
+  // Once imported, publish the actual editable source, not a fresh copy over it.
+  const complete = [...required].every(name => {
+    const file = resolve(root, name);
+    return existsSync(file) && statSync(file).isFile() && statSync(file).size > 0;
+  });
+  if (complete && !process.argv[2]) {
+    console.log('Existing complete application found in public/. Preserving all current app files.');
+    return;
+  }
+  if (!existsSync(archive)) {
+    const older = existsSync('BSEG_Chrome_Relic_Web.zip');
+    throw new Error(
+      'The Moon Relic application has not been uploaded to this repository. ' +
+      (older ? 'BSEG_Chrome_Relic_Web.zip is an older version and will not be substituted. ' : '') +
+      'Upload BSEG_Moon_Relic_Web.zip beside prepare-site.mjs, keep it zipped, and commit it to main. ' +
+      'Then deploy that new commit with build command: node prepare-site.mjs'
+    );
+  }
   const zip = readFileSync(archive);
   if (createHash('sha256').update(zip).digest('hex') !== expected)
-    throw new Error('Archive checksum does not match the preserved Moon Relic build. No app files were changed.');
+    throw new Error('Archive checksum does not match the preserved Moon Relic build. Do not rename the older Chrome Relic archive. No app files were changed.');
   let end = -1;
   for (let i = zip.length - 22; i >= Math.max(0, zip.length - 65557); i--) {
     if (zip.readUInt32LE(i) === 0x06054b50 && i + 22 + zip.readUInt16LE(i + 20) === zip.length) { end = i; break; }
@@ -52,7 +67,7 @@ try {
     if (!bytes || bytes.length !== size) throw new Error('Unsupported or corrupt entry: ' + relative);
     if (existsSync(target) && !readFileSync(target).equals(bytes))
       throw new Error('Existing app edits found in ' + relative + '. Refusing to overwrite them.');
-    entries.push({relative, target, bytes});
+    entries.push({target, bytes});
     seen.add(relative);
   }
   if (seen.size !== required.size) throw new Error('The preserved archive is incomplete.');
@@ -60,8 +75,12 @@ try {
     mkdirSync(dirname(target), {recursive: true});
     writeFileSync(target, bytes);
   }
-  console.log('Preserved BSEG app prepared in public/. Application source and assets are unchanged.');
-  console.log('Cloudflare Pages: build command = node prepare-site.mjs; output directory = public');
+  console.log('Preserved Moon Relic app prepared in public/. Application source and assets are unchanged.');
+}
+
+try {
+  prepare();
+  console.log('Cloudflare Workers settings: build = node prepare-site.mjs; deploy = npx wrangler deploy; root = repository root.');
 } catch (error) {
   console.error('BSEG preparation stopped: ' + error.message);
   process.exitCode = 1;
