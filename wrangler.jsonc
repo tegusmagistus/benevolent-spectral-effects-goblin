@@ -1,5 +1,9 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "benevolent-spectral-effects-goblin",
-  "pages_build_output_dir": "./public"
+  "compatibility_date": "2026-11-10",
+  "workers_dev": true,
+  "assets": {
+    "directory": "./public"
+  }
 }
