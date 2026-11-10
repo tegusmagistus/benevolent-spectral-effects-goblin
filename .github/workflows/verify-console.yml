@@ -1,0 +1,26 @@
+name: Verify console build
+on:
+  push:
+    branches: [fix/mobile-reference-console]
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare and check application
+        run: |
+          node prepare-site.mjs
+          if [ -f apply-console.mjs ]; then node apply-console.mjs; fi
+          node -e 'const fs=require("fs"),h=fs.readFileSync("public/index.html","utf8"); for(const m of h.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g)){if(m[1].trim())new Function(m[1]);} console.log("JavaScript parse check passed");'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: console-review-build
+          path: |
+            public/
+            prepare-site.mjs
+            wrangler.jsonc
+            apply-console.mjs
+          if-no-files-found: error
+          retention-days: 3
