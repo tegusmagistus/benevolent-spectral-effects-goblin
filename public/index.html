@@ -5,7 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1.0" name="viewport"/>
 <meta content="#03060a" name="theme-color"/>
-<title>BENEVOLENT SPECTRAL EFFECTS GOBLIN · MOON RELIC · by GHOSTGIRL 空舞</title>
+<title>BENEVOLENT SPECTRAL EFFECTS GOBLIN · SPECTRAL WORKSTATION · by GHOSTGIRL 空舞</title>
 <meta content="Benevolent Spectral Effects Goblin / BSEG — a cyberwave visual effects console by GHOSTGIRL 空舞. Layer, mutate, perform and export in your browser." name="description"/>
 <link href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2213%22%20fill%3D%22%2307111a%22/%3E%3Cpath%20d%3D%22M32%205L50%2032L32%2059L14%2032Z%22%20fill%3D%22%23354c6e%22%20stroke%3D%22%23f3fdff%22%20stroke-width%3D%221.5%22/%3E%3Cpath%20d%3D%22M32%205V59M14%2032H50%22%20stroke%3D%22%23cbefff%22%20stroke-width%3D%221%22/%3E%3Cpath%20d%3D%22M32%2014L43%2032L32%2050L21%2032Z%22%20fill%3D%22%23bfd7ee%22%20stroke%3D%22%23eaffff%22/%3E%3Ccircle%20cx%3D%2232%22%20cy%3D%2232%22%20r%3D%228%22%20fill%3D%22%23ecf7ff%22/%3E%3Cpath%20d%3D%22M55%205v12M49%2011h12%22%20stroke%3D%22white%22%20stroke-width%3D%222%22/%3E%3C/svg%3E" rel="icon"/>
 <style>
@@ -46,7 +46,7 @@ body.performance .stage-top{padding:10px 25px}body.performance #stageShell{displ
 <header class="topbar">
 <div class="brand" title="Benevolent Spectral Effects Goblin // BSEG // by GHOSTGIRL 空舞">
 <span aria-hidden="true" aria-label="BSEG prismatic chrome sigil" class="brandmark"></span>
-<span class="brand-namegroup"><span aria-label="BENEVOLENT SPECTRAL EFFECTS GOBLIN" class="brand-full"><span class="logo-line logo-main" data-text="BENEVOLENT">BENEVOLENT</span><span class="logo-line logo-sub" data-text="SPECTRAL EFFECTS GOBLIN">SPECTRAL EFFECTS GOBLIN</span></span><span class="brand-name">BSEG <span class="brand-num">// MOON RELIC 006</span></span><span class="brand-credit">by <strong>GHOSTGIRL <span lang="zh-Hans">空舞</span></strong></span></span>
+<span class="brand-namegroup"><span aria-label="BENEVOLENT SPECTRAL EFFECTS GOBLIN" class="brand-full"><span class="logo-line logo-main" data-text="BENEVOLENT">BENEVOLENT</span><span class="logo-line logo-sub" data-text="SPECTRAL EFFECTS GOBLIN">SPECTRAL EFFECTS GOBLIN</span></span><span class="brand-name">BSEG <span class="brand-num">// SPECTRAL WORKSTATION 007</span></span><span class="brand-credit">by <strong>GHOSTGIRL <span lang="zh-Hans">空舞</span></strong></span></span>
 </div>
 
 
@@ -59,7 +59,7 @@ body.performance .stage-top{padding:10px 25px}body.performance #stageShell{displ
 <button class="btn primary" id="recordVideo">↓ Export video</button>
 </div></div>
 <div aria-label="System status" class="system-bus">
-<span class="sys-bus-code">BSEG / SPECTRAL WORKBENCH / 006</span>
+<span class="sys-bus-code">BSEG / SPECTRAL WORKBENCH / 007</span>
 <span class="sys-bus-mid">MACHINE ID <b>00-001</b> <i></i> INTERNAL VIDEO ENGINE</span>
 <span class="sys-bus-end">BY GHOSTGIRL 空舞</span>
 </div>
@@ -647,7 +647,7 @@ function activeChain(){return state.fxScope==='layer'?(chosenLayer()?.effects||[
 function selectedEffect(){return activeChain()[state.selectedFx];}
 function effectiveFx(fx,time,bands){const band=fx.audioBand||'off';const boost=band!=='off'?(bands[band]||0)*(fx.audioGain??1)*state.audioGain:0;return {...fx,amount:Math.max(0,Math.min(1,fxAt(fx,time)+boost))};}
 // Original, deterministic generative lunar scene. No portraits or external media.
-let moonTexture=null;
+let moonTexture=null,guardianTexture=null;
 function seeded(seed){return ()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return ((t^t>>>14)>>>0)/4294967296;};}
 function createMoon(){
  const size=600,canvas=document.createElement('canvas');canvas.width=canvas.height=size;const c=canvas.getContext('2d'),pixels=c.createImageData(size,size),R=size/2-3,rand=seeded(241188);
@@ -658,17 +658,17 @@ function createMoon(){
 }
 function star(c,x,y,r,a=1){c.save();c.translate(x,y);c.globalAlpha=a;c.shadowColor='#ddceff';c.shadowBlur=r*3;c.fillStyle='#f1f4ff';c.beginPath();c.moveTo(0,-r);c.quadraticCurveTo(r*.12,-r*.12,r,0);c.quadraticCurveTo(r*.12,r*.12,0,r);c.quadraticCurveTo(-r*.12,r*.12,-r,0);c.quadraticCurveTo(-r*.12,-r*.12,0,-r);c.fill();c.restore();}
 function drawDemo(c,w,h,t,bands){
- if(!moonTexture)moonTexture=createMoon();c.save();c.fillStyle='#0a1022';c.fillRect(0,0,w,h);const cx=w*.51,cy=h*.49,r=Math.min(w,h)*.27;
+ if(!guardianTexture){guardianTexture=new Image();guardianTexture.src='assets/spectral-guardian.svg';}c.save();c.fillStyle='#0a1022';c.fillRect(0,0,w,h);const cx=w*.51,cy=h*.49,r=Math.min(w,h)*.27;
  let haze=c.createRadialGradient(cx,cy,r*.75,cx,cy,r*2.2);haze.addColorStop(0,'#8a9af033');haze.addColorStop(.5,'#757bbd22');haze.addColorStop(1,'#080d1c00');c.fillStyle=haze;c.fillRect(0,0,w,h);
  const rand=seeded(86374);for(let i=0;i<320;i++){const x=rand()*w,y=rand()*h,s=rand()*1.5+.2,alpha=.2+.5*(.5+.5*Math.sin(t*(.3+rand())+i));c.globalAlpha=alpha;c.fillStyle=i%3?'#c9ddff':'#eed2ff';c.fillRect(x,y,s,s);}c.globalAlpha=1;
  c.strokeStyle='#a2b2ed14';c.lineWidth=.65;for(let x=0;x<w;x+=40){c.beginPath();c.moveTo(x,0);c.lineTo(x,h);c.stroke();}for(let y=0;y<h;y+=40){c.beginPath();c.moveTo(0,y);c.lineTo(w,y);c.stroke();}
  // Iridescent halo and quiet orbital curves.
  for(let j=0;j<4;j++){c.beginPath();c.strokeStyle=['#b8dbff60','#ead5ff55','#9bd0df50','#e5c8f03b'][j];c.lineWidth=j===0?1.5:.8;c.ellipse(cx,cy,r*(1.28+j*.1),r*(1.28+j*.1),0,0,Math.PI*2);c.stroke();}
  for(let j=0;j<3;j++){c.save();c.translate(cx,cy);c.rotate(-.32+j*.65+Math.sin(t*.13)*.06);c.beginPath();c.strokeStyle=['#e4eaff8c','#b5beef5c','#c1f0fd7c'][j];c.lineWidth=j===0?1.6:.8;c.ellipse(0,0,r*(1.9+j*.07),r*(.44+j*.22),0,0,Math.PI*2);c.stroke();c.restore();}
- c.save();c.shadowColor='#c6d7ff';c.shadowBlur=24;c.drawImage(moonTexture,cx-r,cy-r,2*r,2*r);c.restore();
+ c.save();c.shadowColor='#c6d7ff';c.shadowBlur=24;if(guardianTexture.complete&&guardianTexture.naturalWidth)c.drawImage(guardianTexture,cx-r*1.5,cy-r*1.45,3*r,2.9*r);else{c.strokeStyle='#d5b4f4';c.lineWidth=5;c.beginPath();c.arc(cx,cy,r*.6,0,TAU);c.stroke();}c.restore();
  for(let j=0;j<7;j++){const a=j*.9+t*.065,rr=r*(1.4+(j%2)*.43);star(c,cx+Math.cos(a)*rr,cy+Math.sin(a)*rr*(j%2?.48:.89),j%3===0?10:5,.52+.46*Math.sin(t*.8+j)**2);}
  star(c,w*.19,h*.27,12,.8);star(c,w*.82,h*.67,10,.7);star(c,w*.74,h*.2,7,.65);
- c.font=`${Math.max(9,h*.019)}px monospace`;c.fillStyle='#c7d8f4b0';c.fillText('BSEG / LUNAR SIGNAL',w*.04,h*.075);c.font=`${Math.max(8,h*.016)}px monospace`;c.fillText('GENERATIVE SOURCE  //  NO MEDIA LOADED',w*.04,h*.12);
+ c.font=`${Math.max(9,h*.019)}px monospace`;c.fillStyle='#c7d8f4b0';c.fillText('BSEG / GUARDIAN SIGNAL',w*.04,h*.075);c.font=`${Math.max(8,h*.016)}px monospace`;c.fillText('GENERATIVE SOURCE  //  NO MEDIA LOADED',w*.04,h*.12);
  c.textAlign='center';c.fillStyle='#e8e7ffbc';c.font=`italic ${Math.max(12,h*.033)}px Georgia,serif`;c.fillText('everything is becoming',w*.5,h*.91);c.restore();
 }
 
