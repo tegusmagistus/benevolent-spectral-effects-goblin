@@ -39,7 +39,7 @@ body.performance .stage-top{padding:10px 25px}body.performance #stageShell{displ
 
 
 </style>
-<link href="moon-relic.css" rel="stylesheet"/><link href="console-evolution.css" rel="stylesheet"/>
+<link href="moon-relic.css" rel="stylesheet"/><link href="console-evolution.css" rel="stylesheet"/><link href="pro-mobile.css" rel="stylesheet"/>
 </head>
 <body>
 <div id="app">
@@ -65,14 +65,14 @@ body.performance .stage-top{padding:10px 25px}body.performance #stageShell{displ
 </div>
 <div class="workspace">
 <aside class="sidebar library">
-<div class="panelhead"><div><div class="eyebrow">01 / EFFECTS WORKSTATION</div><h2>FX WORKSTATION<span class="heading-mark">✧</span></h2></div><span class="micro">INPUT 01A</span></div>
+<div class="panelhead"><div><div class="eyebrow">01 / PROCESSOR INDEX</div><h2>FX LIBRARY<span class="heading-mark">✧</span></h2></div><span class="micro">INPUT 01A</span></div>
 <div class="import-grid">
 <label class="import-box" for="mediaUpload"><span class="import-glyph">↥</span><strong>IMPORT MEDIA</strong><small>IMAGE  /  VIDEO</small></label>
 <input accept="video/*,image/*,.mp4,.webm,.mov,.m4v,.ogv,.svg" hidden="" id="mediaUpload" multiple="" type="file"/>
 <button class="import-box" id="addText"><span class="import-glyph">T</span><strong>TEXT SIGIL</strong><small>TYPE / LABEL</small></button>
 <button class="import-box" id="addShape"><span class="import-glyph">◇</span><strong>VAJRA SYMBOL</strong><small>SYMBOL / GEOMETRY</small></button><button class="import-box" id="addMesh"><span class="import-glyph">◈</span><strong>3D RELIC</strong><small>MESH / MATERIAL</small></button>
 </div><p class="media-help"><b>VIDEO + IMAGE IMPORT</b><br/>Drop clips into the preview or choose Import media. MP4 / MOV / WebM / PNG / JPEG / WebP.</p><p id="mediaImportStatus" class="media-import-status" role="status" aria-live="polite">Ready to import image or video.</p>
-<div class="tabbar" role="tablist"><button class="tab active" data-library-tab="effects">EFFECTS <small>28</small></button><button class="tab" data-library-tab="presets">MEMORY <small>RECIPES</small></button></div>
+<div class="tabbar" role="tablist"><button class="tab active" data-library-tab="effects">EFFECTS <small>40</small></button><button class="tab" data-library-tab="presets">MEMORY <small>RECIPES</small></button></div>
 <div class="library-section" id="effectsLibrary">
 <input class="search" id="searchEffect" placeholder="Search effects…" type="search"/>
 <div class="categories" id="categoryBar"></div>
@@ -83,12 +83,41 @@ body.performance .stage-top{padding:10px 25px}body.performance #stageShell{displ
 <div class="sidebar-foot"><span class="accentcircle">✺</span><span>EVERY IMAGE IS IMPERMANENT.<small>THE SIGNAL CHANGES / NOTHING STAYS.</small></span></div>
 </aside>
 <main class="center">
+<div class="preview-dock" id="previewDock">
 <div class="stage-top"><div class="stage-label"><span class="eyebrow">02 / PRISM VESSEL</span><span class="stage-name" id="activeLayerName">SOURCE / 00</span></div><div class="stage-options"><select aria-label="Canvas ratio" id="aspectSelect"><option value="source">SOURCE / ORIGINAL</option><option value="16:9">16:9 / LANDSCAPE</option><option value="1:1">1:1 / SQUARE</option><option value="9:16">9:16 / PORTRAIT</option></select><span class="dividerdot">·</span><span id="canvasResolution">1280 × 720</span><select aria-label="Preview and export resolution" id="qualitySelect" title="Preview/export resolution"><option value="720">HD / 720P</option><option value="1080">FULL HD / 1080P</option><option value="2160">4K / UHD</option></select><span class="dividerdot">·</span><span>30 FPS</span><button class="little performance-trigger" id="liveMode" title="Presentation / live performance mode">◉ LIVE</button><button class="little" id="fullscreenStage" title="Fullscreen canvas">⤢</button></div></div>
 <div class="stage-shell" id="stageShell"><i class="crystal-corner nw">✧</i><i class="crystal-corner ne">✧</i><i class="crystal-corner sw">✧</i><i class="crystal-corner se">✧</i><div class="monitor-unit"><div class="monitor-rail"><span aria-hidden="true" class="monitor-bolt"></span><span class="rail-main">BSEG / MIRROR OF IMPERMANENCE // 01</span><span class="rail-sub">SILVER MIRROR <i> // </i> DIGITAL REVERIE</span><span class="rail-live"><em></em> SIGNAL IN</span><span aria-hidden="true" class="monitor-bolt"></span></div><div class="stage-background"><canvas aria-label="Live VFX preview" height="720" id="stage" width="1280"></canvas><div aria-hidden="true" id="trackerMarker"></div></div><div class="monitor-bottom"><span>◂︎ ◂︎ ◂︎  V E S S E L   /   0 2</span><span aria-hidden="true" class="monitor-notch"></span><span>LIVE PIXEL MATRIX <b>1280 × 720</b></span><span aria-hidden="true" class="monitor-bolt"></span></div></div><div class="canvas-label top-left">SPECTRAL DISPLAY  /  MONITOR 01 <span class="canvas-chinese" lang="zh-Hans">空舞</span></div><div class="canvas-label bottom-right" id="renderModeLabel">COMPOSITOR // WEBGL2</div><div class="drop-notice" id="dropNotice">DROP MEDIA TO LOAD</div></div>
 <div class="transport"><button class="transportbtn" id="goStart" title="Restart">↶</button><button class="transportbtn play" id="playButton" title="Play or pause">▶</button><span class="timecode" id="currentTime">00:00.0</span><input aria-label="Playhead time" id="timeSlider" max="8" min="0" step="0.01" type="range" value="0"/><span class="timecode muted" id="totalTime">00:08.0</span><span class="separator"></span><label class="durationlabel">DURATION <input id="durationInput" max="3600" min="0.1" step="0.1" type="number" value="8"/> s</label><button aria-pressed="true" class="little" id="sourceSound" title="Toggle original video sound">♪ Sound on</button></div>
+<section class="pro-quickbar" aria-label="Live primary effects">
+  <div class="quickbar-title-row">
+    <span class="quickbar-title">LIVE PROCESSORS / MASTER OUTPUT</span>
+    <div class="quickbar-utilities">
+      <button id="quickMedia" type="button" title="Import image or video">↥ MEDIA</button>
+      <button id="showFxLibrary" type="button" title="Open the full effects library">ALL FX</button>
+    </div>
+  </div>
+  <div class="quickfx-list" id="quickFxList" aria-label="Primary effects, scroll horizontally">
+    <button type="button" class="quickfx-btn" data-quickfx="bloom">GLOW</button>
+    <button type="button" class="quickfx-btn" data-quickfx="echo">ECHO</button>
+    <button type="button" class="quickfx-btn" data-quickfx="trails">TRAILS</button>
+    <button type="button" class="quickfx-btn" data-quickfx="timewarp">TIME</button>
+    <button type="button" class="quickfx-btn" data-quickfx="prismflare">PRISM</button>
+    <button type="button" class="quickfx-btn" data-quickfx="squeeze">SQUEEZE</button>
+    <button type="button" class="quickfx-btn" data-quickfx="chromatic">RGB SPLIT</button>
+    <button type="button" class="quickfx-btn" data-quickfx="depth">DEPTH</button>
+    <button type="button" class="quickfx-btn" data-quickfx="glitch">GLITCH</button>
+    <button type="button" class="quickfx-btn" data-quickfx="feedback">FEEDBACK</button>
+    <button type="button" class="quickfx-btn" data-quickfx="afterglow">AFTERGLOW</button>
+  </div>
+  <div class="quick-strength">
+    <label for="quickFxAmount" id="quickFxLabel">CHOOSE FX</label>
+    <input type="range" min="0" max="1" step=".01" value=".85" id="quickFxAmount" aria-label="Selected primary effect intensity" disabled>
+    <output for="quickFxAmount" id="quickFxValue">—</output>
+  </div>
+</section>
+</div>
 <section class="timeline"><div class="timelinehead"><div><span class="eyebrow">03 / IMPERMANENCE LOOP</span><h3>Time Veil <span class="countpill" id="layerCountBadge">0 layers</span></h3></div><div class="timelinebuttons"><button class="little" id="layerUp" title="Move selected layer up">↑ Raise</button><button class="little" id="layerDown" title="Move selected layer down">↓ Lower</button><button class="little danger" id="deleteLayer" title="Remove selected layer">× Remove</button></div></div><div class="timeline-ruler" id="timelineRuler"></div><div class="layer-lanes" id="layerLanes"></div><p class="timelinehint">Select a layer to edit it. Use ◇ on a property to set a keyframe at the playhead.</p></section>
 </main>
-<aside class="sidebar inspector"><div class="panelhead inspectorhead"><div><div class="eyebrow">04 / TRANSMUTATION</div><h2>Alchemy Chamber<span class="heading-mark">✧</span></h2></div><span class="inspector-icon">◎</span></div><div class="tabbar"><button class="tab active" data-inspector-tab="fx">FX CHAIN <small>A</small></button><button class="tab" data-inspector-tab="layer">LAYER <small>B</small></button><button class="tab" data-inspector-tab="sound">AUDIO <small>C</small></button></div>
+<aside class="sidebar inspector"><div class="panelhead inspectorhead"><div><div class="eyebrow">04 / TRANSMUTATION</div><h2>PARAMETER ENGINE<span class="heading-mark">✧</span></h2></div><span class="inspector-icon">◎</span></div><div class="tabbar"><button class="tab active" data-inspector-tab="fx">FX CHAIN <small>A</small></button><button class="tab" data-inspector-tab="layer">LAYER <small>B</small></button><button class="tab" data-inspector-tab="sound">AUDIO <small>C</small></button></div>
 <div class="inspector-content" id="fxPanel"><div aria-label="Effect target" class="scope-switch" role="group"><button class="active" data-fx-scope="master">MASTER OUTPUT</button><button data-fx-scope="layer">SELECTED LAYER</button></div><div class="scope-hint" id="scopeLabel">Effects applied after compositing</div><div class="inspector-title"><span>ACTIVE PROCESSORS</span><span class="countpill" id="effectStackCount">0</span></div><div id="effectStack"></div><div id="effectInspector"></div></div>
 <div class="inspector-content" hidden="" id="layerPanel"><div id="layerInspector"></div><input accept="image/*" hidden="" id="depthUpload" type="file"/></div>
 <div class="inspector-content" hidden="" id="soundPanel"><div class="section-caption">FREQUENCY INPUT / AUDIO ENGINE</div><p class="minorcopy">Load a track or use your microphone. Map bass, mids, highs or the full mix to the active effect.</p><label class="audio-upload" for="audioUpload">↥ <strong>Load an audio track</strong><small>MP3 / WAV / OGG</small></label><input accept="audio/*" hidden="" id="audioUpload" type="file"/><button class="btn outline fill" id="micButton">◎ Enable microphone</button><div class="audio-filename" id="audioFileLabel">No audio source</div><div class="meters"><div class="meter"><span>BASS</span><div><i id="meterBass"></i></div></div><div class="meter"><span>MIDS</span><div><i id="meterMid"></i></div></div><div class="meter"><span>HIGHS</span><div><i id="meterHigh"></i></div></div></div><label class="field-label">DRIVEN BY</label><select class="field" id="audioBand"><option value="off">Off</option><option value="bass">Bass</option><option value="mid">Midrange</option><option value="high">High frequencies</option><option value="mix">Full mix</option></select><label class="field-label">RESPONSE <span id="audioGainValue">0.70</span></label><input id="audioGain" max="2" min="0" step="0.01" type="range" value="0.7"/><p class="hint">Audio modulation increases the selected effect's strength while sound is playing. Microphone use requires HTTPS or localhost.</p></div>
@@ -618,7 +647,7 @@ const starter=()=>({version:2,name:'moon_transmission.bseg',aspect:'16:9',durati
  effects:[],layers:[{id:'demo',type:'demo',name:'Moon + stardust',visible:true,opacity:1,x:0,y:0,scale:1,rotation:0,motion:'off',blend:'source-over',keyframes:{},effects:[]}],selectedLayer:'demo',selectedFx:0,audioBand:'off',audioGain:.7});
 function normalizeState(p){const base=starter();const result={...base,...p,version:2,playing:false,time:0,fxScope:p.fxScope==='layer'?'layer':'master',customRecipes:Array.isArray(p.customRecipes)?p.customRecipes:[]};result.effects=(Array.isArray(p.effects)?p.effects:[]).map(f=>({...f,keys:f.keys||[]}));result.layers=(Array.isArray(p.layers)?p.layers:[]).map(l=>({mask:'off',maskSize:.7,maskFeather:.17,maskX:0,maskY:0,maskInvert:false,chromaKey:'off',keyThreshold:.16,keySoftness:.08,...l,effects:(Array.isArray(l.effects)?l.effects:[]).map(f=>({...f,keys:f.keys||[]}))}));result.selectedLayer=result.layers.find(l=>l.id===p.selectedLayer)?.id||result.layers.at(-1)?.id||'';result.selectedFx=0;return result;}
 function restore(){try{const saved=JSON.parse(localStorage.getItem('bseg-moon-relic-project')||'null');if(saved&&Array.isArray(saved.layers)&&Array.isArray(saved.effects))return normalizeState(saved);}catch{}return starter();}
-let state=restore(),category='Tibetan-inspired',effectQuery='',libraryTab='effects',inspectorTab='fx';
+let state=restore(),category='All',effectQuery='',libraryTab='effects',inspectorTab='fx',quickEffectId='bloom';
 const stage=$('stage'),scene=document.createElement('canvas');let ctx=scene.getContext('2d');
 const renderer=new EffectRenderer(stage),audio=new AudioEngine($('trackAudio'));
 const pipeline=new LayerPipeline(1280,720),mesh3d=new Mesh3DRenderer();
@@ -707,6 +736,28 @@ function renderLibrary(){
   $('presetsList').innerHTML=[...RECIPES,...(state.customRecipes||[])].map(p=>`<div class="preset-container"><button class="preset-item" data-recipe="${esc(p.id)}"><strong>${esc(p.name)}</strong><small>${esc(p.subtitle)}</small><div class="preset-tags">${esc(p.tags)}</div></button>${p.custom?`<button class="preset-delete" data-delete-recipe="${esc(p.id)}" title="Delete my saved recipe">×</button>`:''}</div>`).join('');
   $('effectsLibrary').hidden=libraryTab!=='effects';$('presetLibrary').hidden=libraryTab!=='presets';document.querySelectorAll('[data-library-tab]').forEach(b=>b.classList.toggle('active',b.dataset.libraryTab===libraryTab));
 }
+function renderQuickFx(){
+ const active=state.effects.find(f=>f.id===quickEffectId&&f.enabled!==false);
+ const slider=$('quickFxAmount'),label=$('quickFxLabel'),value=$('quickFxValue');
+ if(!slider||!label||!value)return;
+ document.querySelectorAll('[data-quickfx]').forEach(button=>{
+   const id=button.dataset.quickfx,present=state.effects.some(f=>f.id===id&&f.enabled!==false);
+   button.classList.toggle('is-installed',present);
+   button.classList.toggle('is-active',id===quickEffectId&&!!active);
+   button.setAttribute('aria-pressed',String(id===quickEffectId&&!!active));
+ });
+ slider.disabled=!active;slider.value=active?.amount??.85;
+ label.textContent=active?(EFFECT_BY_ID[active.id]?.name||active.id):'CHOOSE FX';
+ value.textContent=active?Math.round(active.amount*100)+'%':'—';
+}
+function activateQuickFx(id){
+ if(!EFFECT_BY_ID[id])return;
+ quickEffectId=id;state.fxScope='master';
+ const existing=state.effects.findIndex(f=>f.id===id);
+ if(existing<0){addFx(id);return;}
+ if(state.effects[existing].enabled===false)state.effects[existing].enabled=true;
+ state.selectedFx=existing;inspectorTab='fx';refresh();store();
+}
 function rangeControl(label,key,val,min,max,step=1,unit='',keyable=false,section='layer'){
  const display=Number(val).toFixed(step<1?step===.01?2:1:0)+unit;
  return `<div class="controlrow"><label>${esc(label)}</label><span><span class="value" data-value-for="${key}">${display}</span> ${keyable?`<button class="keybtn" data-keyframe="${section}:${key}" title="Set keyframe at ${formatTime(state.time)}">◇</button>`:''}</span></div><input class="rangefull" type="range" data-${section}-prop="${key}" min="${min}" max="${max}" step="${step}" value="${val}" />`;
@@ -759,7 +810,7 @@ function renderTimeline(){const l=chosenLayer();$('activeLayerName').textContent
  $('totalTime').textContent=formatTime(state.duration);$('timeSlider').max=state.duration;$('durationInput').value=state.duration;
 }
 function formatTime(t){return `00:${Math.floor(Math.max(0,t)).toString().padStart(2,'0')}.${Math.floor((t%1)*10)}`;}
-function refresh(){renderLibrary();renderInspector();renderTimeline();$('projectName').value=state.name;$('aspectSelect').value=state.aspect;updateTransport();}
+function refresh(){renderLibrary();renderInspector();renderQuickFx();renderTimeline();$('projectName').value=state.name;$('aspectSelect').value=state.aspect;updateTransport();}
 function updateTransport(){const t=Math.min(state.time,state.duration);$('currentTime').textContent=formatTime(t);$('timeSlider').value=t;$('playButton').textContent=state.playing?'❚❚':'▶';document.querySelectorAll('.playhead').forEach(el=>el.style.left=`${Math.min(100,t/state.duration*100)}%`);}
 async function restoreMedia(){for(const l of state.layers){if(l.assetId&&!media.has(l.id)){try{const blob=await getAsset(l.assetId);if(blob)await attachMedia(l,blob,false);else notify(`Missing media for ${l.name}. Re-import it.`);}catch(e){console.warn(e);notify('Saved media unavailable in this browser.');}}if(l.depthAssetId&&!depthMaps.has(l.id)){try{const blob=await getAsset(l.depthAssetId);if(blob)await attachDepthMap(l,blob,false);}catch(e){console.warn('Depth asset unavailable',e);}}}}
 async function attachMedia(layer,blob,persist=true){
@@ -837,6 +888,19 @@ function frame(ts){requestAnimationFrame(frame);const dt=Math.min(1,(ts-lastFram
  if(state.playing){const clockLayer=state.layers.find(l=>l.type==='video'&&l.visible);const clock=clockLayer&&media.get(clockLayer.id)?.element;state.time=(clock&&!clock.paused&&!clock.ended)?clock.currentTime:state.time+dt;if(state.time>=state.duration){state.time=state.duration;if(recording){if(!recording.stopping){recording.stopping=true;recording.rec.stop();}}else togglePlay(false);}updateTransport();}
  if(ts-drawLast<1000/30)return;drawLast=ts;syncVideoAudio();const bands=audio.bands();updateMeter(bands);try{render(state.time,bands);}catch(e){console.error(e);$('renderStatus').textContent=`Render error: ${e.message}`;}}
 function setEventHandlers(){
+ $('quickMedia').onclick=()=>$('mediaUpload').click();
+ $('showFxLibrary').onclick=()=>{const target=$('effectsLibrary');if(target){libraryTab='effects';renderLibrary();target.scrollIntoView({behavior:'smooth',block:'center'});}};
+ $('quickFxList').addEventListener('click',e=>{const b=e.target.closest('[data-quickfx]');if(b)activateQuickFx(b.dataset.quickfx);});
+ $('quickFxAmount').addEventListener('input',e=>{
+   const fx=state.effects.find(x=>x.id===quickEffectId&&x.enabled!==false);
+   if(!fx)return;
+   fx.amount=Math.max(0,Math.min(1,Number(e.target.value)));
+   $('quickFxValue').textContent=Math.round(fx.amount*100)+'%';
+   const inspectorRange=$('effectInspector').querySelector('[data-effect-prop="amount"]');
+   if(inspectorRange&&selectedEffect()===fx)inspectorRange.value=String(fx.amount);
+   store(false);
+ });
+ $('quickFxAmount').addEventListener('change',()=>{renderInspector();store();});
  $('openMedia').onclick=()=>$('mediaUpload').click();
  $('mediaUpload').addEventListener('change',async e=>{const files=Array.from(e.target.files||[]);e.target.value='';if(files.length)await importFiles(files);});$('addText').onclick=()=>addLayer('text');$('addShape').onclick=()=>addLayer('shape');$('addMesh').onclick=()=>addLayer('mesh3d');
  $('categoryBar').addEventListener('click',e=>{const v=e.target.closest('[data-category]')?.dataset.category;if(v){category=v;renderLibrary();}});
