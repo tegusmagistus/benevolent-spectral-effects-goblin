@@ -1,0 +1,39 @@
+name: Verify published BSEG console
+on:
+  push:
+    branches: [verify/live-console-008]
+permissions:
+  contents: read
+jobs:
+  live:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install browser verification tool
+        run: npm install --no-save --package-lock=false playwright-core@1.56.1
+      - name: Check published endpoints and mobile UI
+        run: |
+          cat > /tmp/check-live.cjs <<'NODE'
+          const fs=require('fs'),path=require('path');
+          const {chromium}=require(process.cwd()+'/node_modules/playwright-core');
+          const out='live-results';fs.mkdirSync(out,{recursive:true});
+          const roots=['https://benevolantgoblin.com/','https://benevolent-spectral-effects-goblin.teganlane777.workers.dev/'];
+          const report={checkedAt:new Date().toISOString(),expectedCommit:'21b66a7836232a100fd106786836e8b2a4357b10',endpoints:[],browser:null};
+          (async()=>{
+           for(const root of roots){let result={url:root};for(let attempt=0;attempt<6;attempt++){try{const r=await fetch(root+'?verify=bseg008-'+Date.now(),{signal:AbortSignal.timeout(15000),headers:{'Cache-Control':'no-cache'}}),h=await r.text();result={url:root,status:r.status,contentType:r.headers.get('content-type'),version008:h.includes('BSEG_UI_008_START')&&h.includes('console-pro.css?v=008'),title:h.match(/<title>(.*?)<\/title>/)?.[1]||null};if(result.version008){const css=await fetch(new URL('console-pro.css?v=008',root),{signal:AbortSignal.timeout(15000)});const art=await fetch(new URL('assets/guardian-reference.webp',root),{signal:AbortSignal.timeout(15000)});result.stylesheetStatus=css.status;result.artworkStatus=art.status;break;}}catch(e){result={url:root,error:e.message};}if(attempt<5)await new Promise(r=>setTimeout(r,10000));}report.endpoints.push(result);}
+           const published=report.endpoints.find(e=>e.url===roots[0]&&e.version008)||report.endpoints.find(e=>e.version008);
+           if(published){let browser;try{const executablePath=['/usr/bin/google-chrome','/usr/bin/chromium','/usr/bin/chromium-browser'].find(fs.existsSync);browser=await chromium.launch({executablePath,headless:true,args:['--no-sandbox','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']});const page=await browser.newPage({viewport:{width:390,height:844}}),errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto(published.url+'?build=008',{waitUntil:'load',timeout:45000});await page.waitForFunction(()=>window.__BSEG_UI__?.version==='008',{timeout:20000});await page.waitForTimeout(1500);await page.screenshot({path:path.join(out,'live-phone.png')});const details=await page.evaluate(()=>({uiVersion:window.__BSEG_UI__.version,engine:window.__VFX02_TEST__.getEngine(),guardianLoaded:document.querySelector('.guardian-portrait img').naturalWidth>0,coreVisible:document.querySelector('.pro-quick').getBoundingClientRect().bottom<innerHeight}));report.browser={url:published.url,...details,errors};}catch(e){report.browser={error:e.message};}finally{if(browser)await browser.close();}}
+           report.status=report.endpoints[0]?.version008&&report.browser?.uiVersion==='008'&&report.browser?.errors?.length===0?'PASS':'UNCONFIRMED';fs.writeFileSync(path.join(out,'live-verification.json'),JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));if(report.status!=='PASS')process.exitCode=1;
+          })().catch(e=>{report.status='ERROR';report.error=e.stack;fs.writeFileSync(path.join(out,'live-verification.json'),JSON.stringify(report,null,2));console.error(e);process.exitCode=1;});
+          NODE
+          node /tmp/check-live.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: bseg-live-verification
+          path: live-results/
+          retention-days: 3
