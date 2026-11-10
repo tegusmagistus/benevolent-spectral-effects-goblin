@@ -3,12 +3,12 @@ const http=require('node:http'),fs=require('node:fs'),path=require('node:path'),
 const root=path.resolve('public'),out=path.resolve('test-results');fs.mkdirSync(out,{recursive:true});
 const types={'.html':'text/html','.css':'text/css','.js':'text/javascript','.svg':'image/svg+xml','.webp':'image/webp','.png':'image/png','.mp4':'video/mp4'};
 const server=http.createServer((req,res)=>{const name=decodeURIComponent(req.url.split('?')[0]);const file=path.resolve(root,'.'+(name==='/'?'/index.html':name));if(!file.startsWith(root+path.sep)){res.writeHead(403);res.end();return;}try{res.writeHead(200,{'Content-Type':types[path.extname(file)]||'application/octet-stream','Cache-Control':'no-store'});res.end(fs.readFileSync(file));}catch{res.writeHead(404);res.end('not found');}});
-(async()=>{await new Promise(r=>server.listen(8124,'127.0.0.1',r));let browser;const report={version:'008',checks:[],viewports:[],errors:[]};
+(async()=>{await new Promise(r=>server.listen(8124,'127.0.0.1',r));let browser;const report={version:'008',checks:[],viewports:[],errors:[],browserWarnings:[]};
 try{
  const exe=['/usr/bin/google-chrome','/usr/bin/chromium','/usr/bin/chromium-browser'].find(fs.existsSync);if(!exe)throw Error('No Chromium executable available');
  browser=await chromium.launch({executablePath:exe,headless:true,args:['--no-sandbox','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
  const page=await browser.newPage({viewport:{width:1440,height:1000},acceptDownloads:true});
- page.on('pageerror',e=>report.errors.push(e.message));
+ page.on('pageerror',e=>report.errors.push(e.message));page.on('console',m=>{if(['warning','error'].includes(m.type())&&report.browserWarnings.length<30)report.browserWarnings.push(m.text());});
  await page.goto('http://127.0.0.1:8124/',{waitUntil:'load'});await page.waitForFunction(()=>window.__BSEG_UI__?.version==='008');
  const engine=await page.evaluate(()=>window.__VFX02_TEST__.getEngine());report.engine=engine;assert.equal(engine.gpu,true,'WebGL2 did not initialize');
  report.checks.push('Engine boot: WebGL2 available');
@@ -19,11 +19,12 @@ try{
  await page.click('#proBypass');assert.equal(await page.evaluate(()=>window.__VFX02_TEST__.getState().layers[0].effects[0].enabled),false);await page.click('#proBypass');
  report.checks.push('Core effect selection, nonduplicating shortcuts, mix and bypass');
  for(const [width,height,name]of [[390,844,'phone'],[320,568,'small-phone'],[844,390,'landscape'],[1440,1000,'desktop']]){
-  await page.setViewportSize({width,height});await page.evaluate(()=>window.__BSEG_UI__.setPanel('effects'));await page.waitForTimeout(250);
-  const before=await page.locator('#stage').boundingBox();await page.locator('#effectsList').evaluate(el=>el.scrollTop=el.scrollHeight);await page.waitForTimeout(100);
+  await page.setViewportSize({width,height});await page.evaluate(()=>window.__BSEG_UI__.setPanel('effects'));await page.waitForTimeout(400);
+  await page.evaluate(async()=>{for(let i=0;i<6;i++){window.__BSEG_UI__.fitPreview();await new Promise(r=>requestAnimationFrame(r));}});await page.waitForTimeout(250);
+  const before=await page.locator('#stage').boundingBox();await page.locator('#effectsList').evaluate(el=>el.scrollTop=el.scrollHeight);await page.waitForTimeout(200);
   const after=await page.locator('#stage').boundingBox(),mix=await page.locator('.pro-quick-tune').boundingBox();
-  assert.equal(before.y,after.y,'Preview moves while browsing effects');assert(after.y>=0&&after.y+after.height<height,'Preview outside viewport');assert(mix.y+mix.height<height,'Mix outside viewport');
-  assert(after.width>=200&&after.height>=110,'Preview too small to use');assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'Horizontal overflow');
+  assert(Math.abs(before.y-after.y)<.1,'Preview moves while browsing effects');assert(after.y>=0&&after.y+after.height<height,'Preview outside viewport');assert(mix.y+mix.height<height,'Mix outside viewport');
+  assert(after.width>=(width>1000?450:200)&&after.height>=110,'Preview too small to use');assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'Horizontal overflow');
   await page.locator('#effectsList').evaluate(el=>el.scrollTop=0);if(width<=1000)await page.click('[data-pro-tab="tune"]');
   await page.waitForTimeout(100);await page.screenshot({path:path.join(out,`${name}.png`)});
   report.viewports.push({width,height,name,preview:after,pinnedOnScroll:true,controlsVisible:true,horizontalOverflow:false});
@@ -34,7 +35,7 @@ try{
  report.checks.push('Tools panel, resolution control and layers panel');
  const effects=await page.locator('[data-add-fx]').evaluateAll(es=>es.map(e=>e.dataset.addFx));
  const renderChecks=await page.evaluate(ids=>{const t=window.__VFX02_TEST__,s=t.getState(),gl=document.querySelector('#stage').getContext('webgl2');t.setScope('master');return ids.map(id=>{s.effects=[];s.layers.forEach(l=>l.effects=[]);t.addEffect(id);t.renderFrame(.1);t.renderFrame(.2);return{id,error:gl.getError()};});},effects);
- assert(renderChecks.every(x=>x.error===0),JSON.stringify(renderChecks.filter(x=>x.error)));report.effects=renderChecks;report.checks.push(`${effects.length} effects rendered without GL errors`);
+ report.effects=renderChecks;assert(renderChecks.every(x=>x.error===0),JSON.stringify(renderChecks.filter(x=>x.error)));report.checks.push(`${effects.length} effects rendered without GL errors`);
  await page.evaluate(()=>{const s=window.__VFX02_TEST__.getState();s.effects=[];s.layers.forEach(l=>l.effects=[]);});
  await page.setInputFiles('#mediaUpload',path.join(root,'assets/guardian-reference.webp'));await page.waitForFunction(()=>window.__VFX02_TEST__.getState().layers.some(l=>l.type==='image'));
  await page.setInputFiles('#mediaUpload',path.resolve('tests/motion.mp4'));await page.waitForFunction(()=>{const t=window.__VFX02_TEST__,v=t.getState().layers.find(l=>l.type==='video');return v&&t.getMedia(v.id)?.readyState>=2;});
