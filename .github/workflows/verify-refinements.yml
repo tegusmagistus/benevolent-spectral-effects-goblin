@@ -1,0 +1,31 @@
+name: Verify header and effects scrolling
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'public/console-refinements.*'
+      - 'public/assets/header-guardian.webp'
+      - 'refine-header.mjs'
+      - 'apply-console.mjs'
+      - 'tests/verify-refinements.cjs'
+      - '.github/workflows/verify-refinements.yml'
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: node prepare-site.mjs
+      - run: npm install --no-save --package-lock=false playwright-core@1.56.1
+      - run: node tests/verify-refinements.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: bseg-header-009-verification
+          path: refinement-results/
+          retention-days: 7

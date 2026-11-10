@@ -1,4 +1,4 @@
-/** Apply the 008 responsive console without replacing the existing effect engine. Idempotent. */
+/** Apply the responsive console without replacing the existing effect engine. Idempotent. */
 import {readFileSync,writeFileSync,existsSync,readdirSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 if(existsSync('source-assets')){const cssParts=readdirSync('source-assets').filter(n=>/^console-pro\.\d+\.csspart$/.test(n)).sort();if(cssParts.length)writeFileSync('public/console-pro.css',cssParts.map(n=>readFileSync('source-assets/'+n,'utf8')).join(''));}
@@ -31,11 +31,15 @@ html=html.slice(0,advA)+`function advancedControls(fx){
 }
 `+html.slice(advB);
 if(!html.includes('// BSEG008 depth sampler'))html=html.replace('gl.uniform1i(u.u_tex,0);gl.uniform1i(u.u_depthTex,1);','gl.uniform1i(u.u_tex,0);gl.uniform1i(u.u_depthTex,1);\n  // BSEG008 depth sampler\n  gl.activeTexture(gl.TEXTURE1);gl.bindTexture(gl.TEXTURE_2D,this.textures[3]);gl.activeTexture(gl.TEXTURE0);');
-const ui=readFileSync('public/console-pro.js','utf8');const last=html.lastIndexOf('</script>');if(last<0)throw Error('Engine module missing');
-html=html.slice(0,last)+'\n'+begin+'\n'+ui+'\n'+end+'\n'+html.slice(last);
+const ui=readFileSync('public/console-pro.js','utf8');
+const moduleStart=html.indexOf('<script type="module">');
+const moduleEnd=moduleStart<0?-1:html.indexOf('</script>',moduleStart);
+if(moduleEnd<0)throw Error('Engine module missing');
+html=html.slice(0,moduleEnd)+'\n'+begin+'\n'+ui+'\n'+end+'\n'+html.slice(moduleEnd);
 for(const m of html.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g))if(m[1].trim())new Function(m[1]);
 if(existsSync('source-assets')){const parts=readdirSync('source-assets').filter(n=>/^guardian-reference\.\d+\.b64$/.test(n)).sort();if(parts.length)writeFileSync('public/assets/guardian-reference.webp',Buffer.from(parts.map(n=>readFileSync('source-assets/'+n,'utf8').trim()).join(''),'base64'));}
 if(!existsSync('public/assets/guardian-reference.webp'))throw Error('Reference artwork is missing');
 if(createHash('sha256').update(readFileSync('public/assets/guardian-reference.webp')).digest('hex')!=='b45be9c7d5f8e8c7a7f22f1a433623bd1f363f5cda22025e92bd07ebda2f52e6')throw Error('Reference artwork checksum mismatch');
 writeFileSync(path,html);console.log('BSEG 008 applied: reference artwork, pinned preview, core FX, phone panels.');
 await import('./repair-gpu.mjs');
+await import('./refine-header.mjs');
