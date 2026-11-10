@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
-<meta content="width=device-width,initial-scale=1.0" name="viewport"/>
+<meta content="width=device-width,initial-scale=1.0,viewport-fit=cover" name="viewport"/>
 <meta content="#03060a" name="theme-color"/>
 <title>BENEVOLENT SPECTRAL EFFECTS GOBLIN · SPECTRAL WORKSTATION · by GHOSTGIRL 空舞</title>
 <meta content="Benevolent Spectral Effects Goblin / BSEG — a cyberwave visual effects console by GHOSTGIRL 空舞. Layer, mutate, perform and export in your browser." name="description"/>
@@ -39,7 +39,8 @@ body.performance .stage-top{padding:10px 25px}body.performance #stageShell{displ
 
 
 </style>
-<link href="moon-relic.css" rel="stylesheet"/><link href="console-evolution.css" rel="stylesheet"/><link href="pro-mobile.css" rel="stylesheet"/>
+<link href="moon-relic.css" rel="stylesheet"/><link href="console-evolution.css" rel="stylesheet"/>
+<link href="console-pro.css?v=008" rel="stylesheet"/>
 </head>
 <body>
 <div id="app">
@@ -51,7 +52,7 @@ body.performance .stage-top{padding:10px 25px}body.performance #stageShell{displ
 
 
 
-<div class="guardian-portrait" role="img" aria-label="Tibetan-inspired iridescent guardian"><img src="assets/guardian-dark-compact.webp" alt="Dark Tibetan-inspired protector from the approved console reference"/><span class="guardian-star">✧</span><span class="guardian-caption">SPECTRAL GUARDIAN / 007</span></div></header><div class="toolstrip"><div class="project-meta"><span class="tiny overline">SESSION / 001</span><input aria-label="Project name" id="projectName" value="untitled_01.bseg"/></div><div class="head-actions">
+<div class="guardian-portrait" role="img" aria-label="Tibetan-inspired iridescent guardian"><img src="assets/guardian-reference.webp" alt="Iridescent Tibetan-inspired spectral protector"/><span class="guardian-star">✧</span><span class="guardian-caption">SPECTRAL GUARDIAN / 007</span></div></header><div class="toolstrip"><div class="project-meta"><span class="tiny overline">SESSION / 001</span><input aria-label="Project name" id="projectName" value="untitled_01.bseg"/></div><div class="head-actions">
 <span class="localnote"><i class="statusdot"></i> MEDIA STAYS ON YOUR DEVICE</span>
 <button class="btn ghost" id="undoButton" title="Undo previous edit">↶ Undo</button><button class="btn ghost" id="redoButton" title="Redo previous edit">↷ Redo</button><button class="btn ghost" id="newProject" title="New project">New</button>
 <button class="btn ghost" id="openMedia" type="button">↥ Import media</button><label class="btn ghost" for="projectUpload" style="cursor:pointer">Open project</label><input accept=".json,.vfx01.json,.vfx02.json,.bseg.json" hidden="" id="projectUpload" type="file"/><button class="btn ghost" id="saveProject" title="Save to browser and download project settings">Save project</button>
@@ -65,14 +66,14 @@ body.performance .stage-top{padding:10px 25px}body.performance #stageShell{displ
 </div>
 <div class="workspace">
 <aside class="sidebar library">
-<div class="panelhead"><div><div class="eyebrow">01 / PROCESSOR INDEX</div><h2>FX LIBRARY<span class="heading-mark">✧</span></h2></div><span class="micro">INPUT 01A</span></div>
+<div class="panelhead"><div><div class="eyebrow">01 / EFFECTS WORKSTATION</div><h2>FX WORKSTATION<span class="heading-mark">✧</span></h2></div><span class="micro">INPUT 01A</span></div>
 <div class="import-grid">
 <label class="import-box" for="mediaUpload"><span class="import-glyph">↥</span><strong>IMPORT MEDIA</strong><small>IMAGE  /  VIDEO</small></label>
 <input accept="video/*,image/*,.mp4,.webm,.mov,.m4v,.ogv,.svg" hidden="" id="mediaUpload" multiple="" type="file"/>
 <button class="import-box" id="addText"><span class="import-glyph">T</span><strong>TEXT SIGIL</strong><small>TYPE / LABEL</small></button>
 <button class="import-box" id="addShape"><span class="import-glyph">◇</span><strong>VAJRA SYMBOL</strong><small>SYMBOL / GEOMETRY</small></button><button class="import-box" id="addMesh"><span class="import-glyph">◈</span><strong>3D RELIC</strong><small>MESH / MATERIAL</small></button>
 </div><p class="media-help"><b>VIDEO + IMAGE IMPORT</b><br/>Drop clips into the preview or choose Import media. MP4 / MOV / WebM / PNG / JPEG / WebP.</p><p id="mediaImportStatus" class="media-import-status" role="status" aria-live="polite">Ready to import image or video.</p>
-<div class="tabbar" role="tablist"><button class="tab active" data-library-tab="effects">EFFECTS <small>40</small></button><button class="tab" data-library-tab="presets">MEMORY <small>RECIPES</small></button></div>
+<div class="tabbar" role="tablist"><button class="tab active" data-library-tab="effects">EFFECTS <small>28</small></button><button class="tab" data-library-tab="presets">MEMORY <small>RECIPES</small></button></div>
 <div class="library-section" id="effectsLibrary">
 <input class="search" id="searchEffect" placeholder="Search effects…" type="search"/>
 <div class="categories" id="categoryBar"></div>
@@ -83,41 +84,12 @@ body.performance .stage-top{padding:10px 25px}body.performance #stageShell{displ
 <div class="sidebar-foot"><span class="accentcircle">✺</span><span>EVERY IMAGE IS IMPERMANENT.<small>THE SIGNAL CHANGES / NOTHING STAYS.</small></span></div>
 </aside>
 <main class="center">
-<div class="preview-dock" id="previewDock">
 <div class="stage-top"><div class="stage-label"><span class="eyebrow">02 / PRISM VESSEL</span><span class="stage-name" id="activeLayerName">SOURCE / 00</span></div><div class="stage-options"><select aria-label="Canvas ratio" id="aspectSelect"><option value="source">SOURCE / ORIGINAL</option><option value="16:9">16:9 / LANDSCAPE</option><option value="1:1">1:1 / SQUARE</option><option value="9:16">9:16 / PORTRAIT</option></select><span class="dividerdot">·</span><span id="canvasResolution">1280 × 720</span><select aria-label="Preview and export resolution" id="qualitySelect" title="Preview/export resolution"><option value="720">HD / 720P</option><option value="1080">FULL HD / 1080P</option><option value="2160">4K / UHD</option></select><span class="dividerdot">·</span><span>30 FPS</span><button class="little performance-trigger" id="liveMode" title="Presentation / live performance mode">◉ LIVE</button><button class="little" id="fullscreenStage" title="Fullscreen canvas">⤢</button></div></div>
 <div class="stage-shell" id="stageShell"><i class="crystal-corner nw">✧</i><i class="crystal-corner ne">✧</i><i class="crystal-corner sw">✧</i><i class="crystal-corner se">✧</i><div class="monitor-unit"><div class="monitor-rail"><span aria-hidden="true" class="monitor-bolt"></span><span class="rail-main">BSEG / MIRROR OF IMPERMANENCE // 01</span><span class="rail-sub">SILVER MIRROR <i> // </i> DIGITAL REVERIE</span><span class="rail-live"><em></em> SIGNAL IN</span><span aria-hidden="true" class="monitor-bolt"></span></div><div class="stage-background"><canvas aria-label="Live VFX preview" height="720" id="stage" width="1280"></canvas><div aria-hidden="true" id="trackerMarker"></div></div><div class="monitor-bottom"><span>◂︎ ◂︎ ◂︎  V E S S E L   /   0 2</span><span aria-hidden="true" class="monitor-notch"></span><span>LIVE PIXEL MATRIX <b>1280 × 720</b></span><span aria-hidden="true" class="monitor-bolt"></span></div></div><div class="canvas-label top-left">SPECTRAL DISPLAY  /  MONITOR 01 <span class="canvas-chinese" lang="zh-Hans">空舞</span></div><div class="canvas-label bottom-right" id="renderModeLabel">COMPOSITOR // WEBGL2</div><div class="drop-notice" id="dropNotice">DROP MEDIA TO LOAD</div></div>
 <div class="transport"><button class="transportbtn" id="goStart" title="Restart">↶</button><button class="transportbtn play" id="playButton" title="Play or pause">▶</button><span class="timecode" id="currentTime">00:00.0</span><input aria-label="Playhead time" id="timeSlider" max="8" min="0" step="0.01" type="range" value="0"/><span class="timecode muted" id="totalTime">00:08.0</span><span class="separator"></span><label class="durationlabel">DURATION <input id="durationInput" max="3600" min="0.1" step="0.1" type="number" value="8"/> s</label><button aria-pressed="true" class="little" id="sourceSound" title="Toggle original video sound">♪ Sound on</button></div>
-<section class="pro-quickbar" aria-label="Live primary effects">
-  <div class="quickbar-title-row">
-    <span class="quickbar-title">LIVE PROCESSORS / MASTER OUTPUT</span>
-    <div class="quickbar-utilities">
-      <button id="quickMedia" type="button" title="Import image or video">↥ MEDIA</button>
-      <button id="showFxLibrary" type="button" title="Open the full effects library">ALL FX</button>
-    </div>
-  </div>
-  <div class="quickfx-list" id="quickFxList" aria-label="Primary effects, scroll horizontally">
-    <button type="button" class="quickfx-btn" data-quickfx="bloom">GLOW</button>
-    <button type="button" class="quickfx-btn" data-quickfx="echo">ECHO</button>
-    <button type="button" class="quickfx-btn" data-quickfx="trails">TRAILS</button>
-    <button type="button" class="quickfx-btn" data-quickfx="timewarp">TIME</button>
-    <button type="button" class="quickfx-btn" data-quickfx="prismflare">PRISM</button>
-    <button type="button" class="quickfx-btn" data-quickfx="squeeze">SQUEEZE</button>
-    <button type="button" class="quickfx-btn" data-quickfx="chromatic">RGB SPLIT</button>
-    <button type="button" class="quickfx-btn" data-quickfx="depth">DEPTH</button>
-    <button type="button" class="quickfx-btn" data-quickfx="glitch">GLITCH</button>
-    <button type="button" class="quickfx-btn" data-quickfx="feedback">FEEDBACK</button>
-    <button type="button" class="quickfx-btn" data-quickfx="afterglow">AFTERGLOW</button>
-  </div>
-  <div class="quick-strength">
-    <label for="quickFxAmount" id="quickFxLabel">CHOOSE FX</label>
-    <input type="range" min="0" max="1" step=".01" value=".85" id="quickFxAmount" aria-label="Selected primary effect intensity" disabled>
-    <output for="quickFxAmount" id="quickFxValue">—</output>
-  </div>
-</section>
-</div>
 <section class="timeline"><div class="timelinehead"><div><span class="eyebrow">03 / IMPERMANENCE LOOP</span><h3>Time Veil <span class="countpill" id="layerCountBadge">0 layers</span></h3></div><div class="timelinebuttons"><button class="little" id="layerUp" title="Move selected layer up">↑ Raise</button><button class="little" id="layerDown" title="Move selected layer down">↓ Lower</button><button class="little danger" id="deleteLayer" title="Remove selected layer">× Remove</button></div></div><div class="timeline-ruler" id="timelineRuler"></div><div class="layer-lanes" id="layerLanes"></div><p class="timelinehint">Select a layer to edit it. Use ◇ on a property to set a keyframe at the playhead.</p></section>
 </main>
-<aside class="sidebar inspector"><div class="panelhead inspectorhead"><div><div class="eyebrow">04 / TRANSMUTATION</div><h2>PARAMETER ENGINE<span class="heading-mark">✧</span></h2></div><span class="inspector-icon">◎</span></div><div class="tabbar"><button class="tab active" data-inspector-tab="fx">FX CHAIN <small>A</small></button><button class="tab" data-inspector-tab="layer">LAYER <small>B</small></button><button class="tab" data-inspector-tab="sound">AUDIO <small>C</small></button></div>
+<aside class="sidebar inspector"><div class="panelhead inspectorhead"><div><div class="eyebrow">04 / TRANSMUTATION</div><h2>Alchemy Chamber<span class="heading-mark">✧</span></h2></div><span class="inspector-icon">◎</span></div><div class="tabbar"><button class="tab active" data-inspector-tab="fx">FX CHAIN <small>A</small></button><button class="tab" data-inspector-tab="layer">LAYER <small>B</small></button><button class="tab" data-inspector-tab="sound">AUDIO <small>C</small></button></div>
 <div class="inspector-content" id="fxPanel"><div aria-label="Effect target" class="scope-switch" role="group"><button class="active" data-fx-scope="master">MASTER OUTPUT</button><button data-fx-scope="layer">SELECTED LAYER</button></div><div class="scope-hint" id="scopeLabel">Effects applied after compositing</div><div class="inspector-title"><span>ACTIVE PROCESSORS</span><span class="countpill" id="effectStackCount">0</span></div><div id="effectStack"></div><div id="effectInspector"></div></div>
 <div class="inspector-content" hidden="" id="layerPanel"><div id="layerInspector"></div><input accept="image/*" hidden="" id="depthUpload" type="file"/></div>
 <div class="inspector-content" hidden="" id="soundPanel"><div class="section-caption">FREQUENCY INPUT / AUDIO ENGINE</div><p class="minorcopy">Load a track or use your microphone. Map bass, mids, highs or the full mix to the active effect.</p><label class="audio-upload" for="audioUpload">↥ <strong>Load an audio track</strong><small>MP3 / WAV / OGG</small></label><input accept="audio/*" hidden="" id="audioUpload" type="file"/><button class="btn outline fill" id="micButton">◎ Enable microphone</button><div class="audio-filename" id="audioFileLabel">No audio source</div><div class="meters"><div class="meter"><span>BASS</span><div><i id="meterBass"></i></div></div><div class="meter"><span>MIDS</span><div><i id="meterMid"></i></div></div><div class="meter"><span>HIGHS</span><div><i id="meterHigh"></i></div></div></div><label class="field-label">DRIVEN BY</label><select class="field" id="audioBand"><option value="off">Off</option><option value="bass">Bass</option><option value="mid">Midrange</option><option value="high">High frequencies</option><option value="mix">Full mix</option></select><label class="field-label">RESPONSE <span id="audioGainValue">0.70</span></label><input id="audioGain" max="2" min="0" step="0.01" type="range" value="0.7"/><p class="hint">Audio modulation increases the selected effect's strength while sound is playing. Microphone use requires HTTPS or localhost.</p></div>
@@ -399,12 +371,14 @@ class EffectRenderer {
   const gl=this.gl,u=this.uniforms;
   if(options.scopeKey!==undefined&&this.lastScope!==options.scopeKey){this.historyReady=false;this.lastScope=options.scopeKey;}
   gl.useProgram(this.program);gl.viewport(0,0,this.w,this.h);gl.disable(gl.BLEND);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,this.textures[0]);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,source);gl.uniform1i(u.u_tex,0);gl.uniform1i(u.u_depthTex,1);
+  // BSEG008 depth sampler
+  gl.activeTexture(gl.TEXTURE1);gl.bindTexture(gl.TEXTURE_2D,this.textures[3]);gl.activeTexture(gl.TEXTURE0);
   gl.activeTexture(gl.TEXTURE2);gl.bindTexture(gl.TEXTURE_2D,this.textures[4]);gl.uniform1i(u.u_history,2);gl.uniform1i(u.u_hasHistory,this.historyReady?1:0);gl.activeTexture(gl.TEXTURE0);gl.uniform1i(u.u_hasDepth,options.depthMap?1:0);gl.uniform1i(u.u_keyColor,options.keyColor==='green'?1:2);gl.uniform1f(u.u_keyThreshold,options.keyThreshold??.16);gl.uniform1f(u.u_keySoftness,options.keySoftness??.08);if(options.depthMap){gl.activeTexture(gl.TEXTURE1);gl.bindTexture(gl.TEXTURE_2D,this.textures[3]);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,options.depthMap);gl.activeTexture(gl.TEXTURE0);}gl.uniform2f(u.u_res,this.w,this.h);gl.uniform1f(u.u_time,time);gl.uniform4f(u.u_audio,audio.bass||0,audio.mid||0,audio.high||0,audio.mix||0);
   let input=0,pass=0;
   const active=chain.filter(x=>x.enabled!==false&&MODE[x.id]);if(options.keyColor&&options.keyColor!=='off')active.push({id:'__keyer',amount:1});
   for(const fx of active){const output=1+pass%2;gl.bindFramebuffer(gl.FRAMEBUFFER,this.framebuffers[pass%2]);gl.bindTexture(gl.TEXTURE_2D,this.textures[input]);gl.uniform1i(u.u_mode,fx.id==='__keyer'?50:MODE[fx.id]);gl.uniform1f(u.u_amount,Math.min(1,Math.max(0,fx.amount)));gl.uniform4f(u.u_custom,fx.tuneA??.5,fx.tuneB??.5,fx.tuneC??.5,fx.tuneD??.5);gl.drawArrays(gl.TRIANGLES,0,6);input=output;pass++;}
   gl.bindFramebuffer(gl.FRAMEBUFFER,null);gl.bindTexture(gl.TEXTURE_2D,this.textures[input]);gl.uniform1i(u.u_mode,0);gl.uniform1f(u.u_amount,1);gl.uniform4f(u.u_custom,.5,.5,.5,.5);gl.drawArrays(gl.TRIANGLES,0,6);
-  gl.activeTexture(gl.TEXTURE2);gl.bindTexture(gl.TEXTURE_2D,this.textures[4]);try{gl.copyTexSubImage2D(gl.TEXTURE_2D,0,0,0,0,0,this.w,this.h);this.historyReady=true;}catch(e){this.historyReady=false;}gl.activeTexture(gl.TEXTURE0);
+  gl.activeTexture(gl.TEXTURE2);gl.bindTexture(gl.TEXTURE_2D,this.textures[4]);if(pass>0){gl.bindFramebuffer(gl.FRAMEBUFFER,this.framebuffers[(pass-1)%2]);gl.copyTexSubImage2D(gl.TEXTURE_2D,0,0,0,0,0,this.w,this.h);gl.bindFramebuffer(gl.FRAMEBUFFER,null);this.historyReady=true;}else{this.historyReady=false;}gl.activeTexture(gl.TEXTURE0); // BSEG008 RGBA history
  }
 }
 
@@ -643,11 +617,11 @@ const $=(id)=>document.getElementById(id);
 const esc=(s)=>String(s??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch]));
 const newid=()=>globalThis.crypto?.randomUUID?.()||`id-${Date.now()}-${Math.random().toString(36).slice(2)}`;
 const EFFECT_BY_ID=Object.fromEntries(EFFECTS.map(e=>[e.id,e]));
-const starter=()=>({version:2,name:'moon_transmission.bseg',aspect:'16:9',duration:8,playing:false,time:0,fxScope:'layer',customRecipes:[],sourceSound:true,
- effects:[],layers:[{id:'demo',type:'demo',name:'Moon + stardust',visible:true,opacity:1,x:0,y:0,scale:1,rotation:0,motion:'off',blend:'source-over',keyframes:{},effects:[]}],selectedLayer:'demo',selectedFx:0,audioBand:'off',audioGain:.7});
+const starter=()=>({version:2,name:'spectral_session.bseg',aspect:'16:9',duration:8,playing:false,time:0,fxScope:'layer',customRecipes:[],sourceSound:true,
+ effects:[],layers:[{id:'demo',type:'demo',name:'Guardian reference',visible:true,opacity:1,x:0,y:0,scale:1,rotation:0,motion:'off',blend:'source-over',keyframes:{},effects:[]}],selectedLayer:'demo',selectedFx:0,audioBand:'off',audioGain:.7});
 function normalizeState(p){const base=starter();const result={...base,...p,version:2,playing:false,time:0,fxScope:p.fxScope==='layer'?'layer':'master',customRecipes:Array.isArray(p.customRecipes)?p.customRecipes:[]};result.effects=(Array.isArray(p.effects)?p.effects:[]).map(f=>({...f,keys:f.keys||[]}));result.layers=(Array.isArray(p.layers)?p.layers:[]).map(l=>({mask:'off',maskSize:.7,maskFeather:.17,maskX:0,maskY:0,maskInvert:false,chromaKey:'off',keyThreshold:.16,keySoftness:.08,...l,effects:(Array.isArray(l.effects)?l.effects:[]).map(f=>({...f,keys:f.keys||[]}))}));result.selectedLayer=result.layers.find(l=>l.id===p.selectedLayer)?.id||result.layers.at(-1)?.id||'';result.selectedFx=0;return result;}
 function restore(){try{const saved=JSON.parse(localStorage.getItem('bseg-moon-relic-project')||'null');if(saved&&Array.isArray(saved.layers)&&Array.isArray(saved.effects))return normalizeState(saved);}catch{}return starter();}
-let state=restore(),category='All',effectQuery='',libraryTab='effects',inspectorTab='fx',quickEffectId='bloom';
+let state=restore(),category='All',effectQuery='',libraryTab='effects',inspectorTab='fx';
 const stage=$('stage'),scene=document.createElement('canvas');let ctx=scene.getContext('2d');
 const renderer=new EffectRenderer(stage),audio=new AudioEngine($('trackAudio'));
 const pipeline=new LayerPipeline(1280,720),mesh3d=new Mesh3DRenderer();
@@ -687,20 +661,11 @@ function createMoon(){
 }
 function star(c,x,y,r,a=1){c.save();c.translate(x,y);c.globalAlpha=a;c.shadowColor='#ddceff';c.shadowBlur=r*3;c.fillStyle='#f1f4ff';c.beginPath();c.moveTo(0,-r);c.quadraticCurveTo(r*.12,-r*.12,r,0);c.quadraticCurveTo(r*.12,r*.12,0,r);c.quadraticCurveTo(-r*.12,r*.12,-r,0);c.quadraticCurveTo(-r*.12,-r*.12,0,-r);c.fill();c.restore();}
 function drawDemo(c,w,h,t,bands){
- if(!guardianTexture){guardianTexture=new Image();guardianTexture.src='assets/spectral-guardian.svg';}c.save();c.fillStyle='#0a1022';c.fillRect(0,0,w,h);const cx=w*.51,cy=h*.49,r=Math.min(w,h)*.27;
- let haze=c.createRadialGradient(cx,cy,r*.75,cx,cy,r*2.2);haze.addColorStop(0,'#8a9af033');haze.addColorStop(.5,'#757bbd22');haze.addColorStop(1,'#080d1c00');c.fillStyle=haze;c.fillRect(0,0,w,h);
- const rand=seeded(86374);for(let i=0;i<320;i++){const x=rand()*w,y=rand()*h,s=rand()*1.5+.2,alpha=.2+.5*(.5+.5*Math.sin(t*(.3+rand())+i));c.globalAlpha=alpha;c.fillStyle=i%3?'#c9ddff':'#eed2ff';c.fillRect(x,y,s,s);}c.globalAlpha=1;
- c.strokeStyle='#a2b2ed14';c.lineWidth=.65;for(let x=0;x<w;x+=40){c.beginPath();c.moveTo(x,0);c.lineTo(x,h);c.stroke();}for(let y=0;y<h;y+=40){c.beginPath();c.moveTo(0,y);c.lineTo(w,y);c.stroke();}
- // Iridescent halo and quiet orbital curves.
- for(let j=0;j<4;j++){c.beginPath();c.strokeStyle=['#b8dbff60','#ead5ff55','#9bd0df50','#e5c8f03b'][j];c.lineWidth=j===0?1.5:.8;c.ellipse(cx,cy,r*(1.28+j*.1),r*(1.28+j*.1),0,0,Math.PI*2);c.stroke();}
- for(let j=0;j<3;j++){c.save();c.translate(cx,cy);c.rotate(-.32+j*.65+Math.sin(t*.13)*.06);c.beginPath();c.strokeStyle=['#e4eaff8c','#b5beef5c','#c1f0fd7c'][j];c.lineWidth=j===0?1.6:.8;c.ellipse(0,0,r*(1.9+j*.07),r*(.44+j*.22),0,0,Math.PI*2);c.stroke();c.restore();}
- c.save();c.shadowColor='#c6d7ff';c.shadowBlur=24;if(guardianTexture.complete&&guardianTexture.naturalWidth)c.drawImage(guardianTexture,cx-r*1.5,cy-r*1.45,3*r,2.9*r);else{c.strokeStyle='#d5b4f4';c.lineWidth=5;c.beginPath();c.arc(cx,cy,r*.6,0,TAU);c.stroke();}c.restore();
- for(let j=0;j<7;j++){const a=j*.9+t*.065,rr=r*(1.4+(j%2)*.43);star(c,cx+Math.cos(a)*rr,cy+Math.sin(a)*rr*(j%2?.48:.89),j%3===0?10:5,.52+.46*Math.sin(t*.8+j)**2);}
- star(c,w*.19,h*.27,12,.8);star(c,w*.82,h*.67,10,.7);star(c,w*.74,h*.2,7,.65);
- c.font=`${Math.max(9,h*.019)}px monospace`;c.fillStyle='#c7d8f4b0';c.fillText('BSEG / GUARDIAN SIGNAL',w*.04,h*.075);c.font=`${Math.max(8,h*.016)}px monospace`;c.fillText('GENERATIVE SOURCE  //  NO MEDIA LOADED',w*.04,h*.12);
- c.textAlign='center';c.fillStyle='#e8e7ffbc';c.font=`italic ${Math.max(12,h*.033)}px Georgia,serif`;c.fillText('everything is becoming',w*.5,h*.91);c.restore();
+ if(!guardianTexture){guardianTexture=new Image();guardianTexture.src='assets/guardian-reference.webp';}
+ c.save();c.fillStyle='#070b15';c.fillRect(0,0,w,h);
+ if(guardianTexture.complete&&guardianTexture.naturalWidth){const k=Math.max(w/guardianTexture.naturalWidth,h/guardianTexture.naturalHeight);const iw=guardianTexture.naturalWidth*k,ih=guardianTexture.naturalHeight*k;c.drawImage(guardianTexture,(w-iw)/2,(h-ih)/2,iw,ih);}
+ c.restore();
 }
-
 function drawMediaCover(c,element,w,h){const sw=element.videoWidth||element.naturalWidth||element.width||w,sh=element.videoHeight||element.naturalHeight||element.height||h;if(!sw||!sh)return;const scale=Math.max(w/sw,h/sh);const ow=sw*scale,oh=sh*scale;c.drawImage(element,-ow/2,-oh/2,ow,oh);}
 function applyMotion(layer,t){const motion=layer.motion||'off';let x=0,y=0,rot=0,scale=1;if(motion==='float')y=Math.sin(t*1.4)*.035;if(motion==='drift'){x=Math.sin(t*.5)*.023;y=Math.cos(t*.6)*.021;}if(motion==='sway')rot=Math.sin(t*.85)*6;if(motion==='spin')rot=t*30;if(motion==='breathe')scale=1+Math.sin(t*2.0)*.045;if(motion==='pulse')scale=1+Math.max(0,Math.sin(t*4))* .1;return {x,y,rot,scale};}
 function drawLayerSource(c,w,h,layer,time,bands){
@@ -736,35 +701,16 @@ function renderLibrary(){
   $('presetsList').innerHTML=[...RECIPES,...(state.customRecipes||[])].map(p=>`<div class="preset-container"><button class="preset-item" data-recipe="${esc(p.id)}"><strong>${esc(p.name)}</strong><small>${esc(p.subtitle)}</small><div class="preset-tags">${esc(p.tags)}</div></button>${p.custom?`<button class="preset-delete" data-delete-recipe="${esc(p.id)}" title="Delete my saved recipe">×</button>`:''}</div>`).join('');
   $('effectsLibrary').hidden=libraryTab!=='effects';$('presetLibrary').hidden=libraryTab!=='presets';document.querySelectorAll('[data-library-tab]').forEach(b=>b.classList.toggle('active',b.dataset.libraryTab===libraryTab));
 }
-function renderQuickFx(){
- const active=state.effects.find(f=>f.id===quickEffectId&&f.enabled!==false);
- const slider=$('quickFxAmount'),label=$('quickFxLabel'),value=$('quickFxValue');
- if(!slider||!label||!value)return;
- document.querySelectorAll('[data-quickfx]').forEach(button=>{
-   const id=button.dataset.quickfx,present=state.effects.some(f=>f.id===id&&f.enabled!==false);
-   button.classList.toggle('is-installed',present);
-   button.classList.toggle('is-active',id===quickEffectId&&!!active);
-   button.setAttribute('aria-pressed',String(id===quickEffectId&&!!active));
- });
- slider.disabled=!active;slider.value=active?.amount??.85;
- label.textContent=active?(EFFECT_BY_ID[active.id]?.name||active.id):'CHOOSE FX';
- value.textContent=active?Math.round(active.amount*100)+'%':'—';
-}
-function activateQuickFx(id){
- if(!EFFECT_BY_ID[id])return;
- quickEffectId=id;state.fxScope='master';
- const existing=state.effects.findIndex(f=>f.id===id);
- if(existing<0){addFx(id);return;}
- if(state.effects[existing].enabled===false)state.effects[existing].enabled=true;
- state.selectedFx=existing;inspectorTab='fx';refresh();store();
-}
 function rangeControl(label,key,val,min,max,step=1,unit='',keyable=false,section='layer'){
  const display=Number(val).toFixed(step<1?step===.01?2:1:0)+unit;
  return `<div class="controlrow"><label>${esc(label)}</label><span><span class="value" data-value-for="${key}">${display}</span> ${keyable?`<button class="keybtn" data-keyframe="${section}:${key}" title="Set keyframe at ${formatTime(state.time)}">◇</button>`:''}</span></div><input class="rangefull" type="range" data-${section}-prop="${key}" min="${min}" max="${max}" step="${step}" value="${val}" />`;
 }
 function advancedControls(fx){
- const isTemporal=['echo','trails','timewarp','ghostdouble','feedback','afterglow'].includes(fx.id);
- return `<div class="fx-fine-tune"><div class="eyebrow">ADVANCED SIGNAL PROCESSING / FOUR-AXIS CONTROL</div>${rangeControl('Detail / frequency','tuneA',fx.tuneA??.5,0,1,.01,'',false,'effect')}${rangeControl('Chromatic bias / X displacement','tuneB',fx.tuneB??.5,0,1,.01,'',false,'effect')}${rangeControl('Optical squeeze / Y displacement','tuneC',fx.tuneC??.5,0,1,.01,'',false,'effect')}${rangeControl(isTemporal?'Feedback decay / temporal memory':'Motion / decay','tuneD',fx.tuneD??.5,0,1,.01,'',false,'effect')}<div class="fx-tune-legend">Fine-tune each processor independently. Values render in real time on WebGL2; frame-history effects reset when the playhead jumps.</div></div>`;
+ if(RITUAL_DEFS[fx.id])return '';
+ const labels={
+ echo:['Contrast','Echo offset X','Optical stretch','Persistence'],trails:['Contrast','Trail drift X','Trail drift Y / stretch','Decay'],timewarp:['Wave frequency / contrast','Displacement X','Displacement Y / stretch','Motion rate'],prismflare:['Diffraction / contrast','Channel split','Optical stretch','Spectral glow'],squeeze:['Squeeze X / contrast','Squeeze Y','Ripple detail / stretch','Ripple speed'],ghostdouble:['Contrast','Double offset X','Double offset Y / stretch','Echo blend'],caustic:['Wave detail / contrast','Refraction X','Refraction Y / stretch','Flow speed'],feedback:['Contrast','Feedback rotation','Feedback zoom / stretch','Persistence'],lens:['Lens warp / contrast','Sway X','Sway Y / stretch'],pulse:['Breathing depth / contrast','Sway X','Sway Y / stretch','Breathing speed'],shred:['Slice frequency / contrast','Displacement','Tint / stretch','Refresh rate'],afterglow:['Contrast','Drift X','Drift Y / stretch','Phosphor decay']};
+ const names=labels[fx.id]||['Contrast','Exposure','Optical stretch'];
+ return '<div class="fx-fine-tune"><div class="eyebrow">SIGNAL PARAMETERS</div>'+names.map((name,i)=>rangeControl(name,'tune'+['A','B','C','D'][i],fx['tune'+['A','B','C','D'][i]]??.5,0,1,.01,'',false,'effect')).join('')+'</div>';
 }
 function renderInspector(){
  const chain=activeChain(),l=chosenLayer();
@@ -810,7 +756,7 @@ function renderTimeline(){const l=chosenLayer();$('activeLayerName').textContent
  $('totalTime').textContent=formatTime(state.duration);$('timeSlider').max=state.duration;$('durationInput').value=state.duration;
 }
 function formatTime(t){return `00:${Math.floor(Math.max(0,t)).toString().padStart(2,'0')}.${Math.floor((t%1)*10)}`;}
-function refresh(){renderLibrary();renderInspector();renderQuickFx();renderTimeline();$('projectName').value=state.name;$('aspectSelect').value=state.aspect;updateTransport();}
+function refresh(){renderLibrary();renderInspector();renderTimeline();$('projectName').value=state.name;$('aspectSelect').value=state.aspect;updateTransport();}
 function updateTransport(){const t=Math.min(state.time,state.duration);$('currentTime').textContent=formatTime(t);$('timeSlider').value=t;$('playButton').textContent=state.playing?'❚❚':'▶';document.querySelectorAll('.playhead').forEach(el=>el.style.left=`${Math.min(100,t/state.duration*100)}%`);}
 async function restoreMedia(){for(const l of state.layers){if(l.assetId&&!media.has(l.id)){try{const blob=await getAsset(l.assetId);if(blob)await attachMedia(l,blob,false);else notify(`Missing media for ${l.name}. Re-import it.`);}catch(e){console.warn(e);notify('Saved media unavailable in this browser.');}}if(l.depthAssetId&&!depthMaps.has(l.id)){try{const blob=await getAsset(l.depthAssetId);if(blob)await attachDepthMap(l,blob,false);}catch(e){console.warn('Depth asset unavailable',e);}}}}
 async function attachMedia(layer,blob,persist=true){
@@ -888,19 +834,6 @@ function frame(ts){requestAnimationFrame(frame);const dt=Math.min(1,(ts-lastFram
  if(state.playing){const clockLayer=state.layers.find(l=>l.type==='video'&&l.visible);const clock=clockLayer&&media.get(clockLayer.id)?.element;state.time=(clock&&!clock.paused&&!clock.ended)?clock.currentTime:state.time+dt;if(state.time>=state.duration){state.time=state.duration;if(recording){if(!recording.stopping){recording.stopping=true;recording.rec.stop();}}else togglePlay(false);}updateTransport();}
  if(ts-drawLast<1000/30)return;drawLast=ts;syncVideoAudio();const bands=audio.bands();updateMeter(bands);try{render(state.time,bands);}catch(e){console.error(e);$('renderStatus').textContent=`Render error: ${e.message}`;}}
 function setEventHandlers(){
- $('quickMedia').onclick=()=>$('mediaUpload').click();
- $('showFxLibrary').onclick=()=>{const target=$('effectsLibrary');if(target){libraryTab='effects';renderLibrary();target.scrollIntoView({behavior:'smooth',block:'center'});}};
- $('quickFxList').addEventListener('click',e=>{const b=e.target.closest('[data-quickfx]');if(b)activateQuickFx(b.dataset.quickfx);});
- $('quickFxAmount').addEventListener('input',e=>{
-   const fx=state.effects.find(x=>x.id===quickEffectId&&x.enabled!==false);
-   if(!fx)return;
-   fx.amount=Math.max(0,Math.min(1,Number(e.target.value)));
-   $('quickFxValue').textContent=Math.round(fx.amount*100)+'%';
-   const inspectorRange=$('effectInspector').querySelector('[data-effect-prop="amount"]');
-   if(inspectorRange&&selectedEffect()===fx)inspectorRange.value=String(fx.amount);
-   store(false);
- });
- $('quickFxAmount').addEventListener('change',()=>{renderInspector();store();});
  $('openMedia').onclick=()=>$('mediaUpload').click();
  $('mediaUpload').addEventListener('change',async e=>{const files=Array.from(e.target.files||[]);e.target.value='';if(files.length)await importFiles(files);});$('addText').onclick=()=>addLayer('text');$('addShape').onclick=()=>addLayer('shape');$('addMesh').onclick=()=>addLayer('mesh3d');
  $('categoryBar').addEventListener('click',e=>{const v=e.target.closest('[data-category]')?.dataset.category;if(v){category=v;renderLibrary();}});
@@ -965,6 +898,126 @@ const importTarget=document.querySelector('label[for="mediaUpload"]');importTarg
 // Guard against accidental opening of dropped videos outside the drop zone.
 window.addEventListener('dragover',e=>{if(e.dataTransfer?.types.includes('Files'))e.preventDefault();});window.addEventListener('drop',e=>{if(e.dataTransfer?.files.length)e.preventDefault();});
 
+
+/* BSEG_UI_008_START */
+/* BSEG 008 — UI extension, appended to the existing engine module by apply-console.mjs. */
+function mountProConsole() {
+  const app=$('app'), workspace=document.querySelector('.workspace'), center=document.querySelector('.center');
+  const library=document.querySelector('.library'), inspector=document.querySelector('.inspector');
+  if (!app || app.dataset.consoleVersion==='008') return;
+  app.dataset.consoleVersion='008';
+  document.body.classList.add('pro-console');
+  const mobile=matchMedia('(max-width:1000px)');
+  let panel='effects';
+  const make=(tag,attrs={},html='')=>{const e=document.createElement(tag);for(const[k,v]of Object.entries(attrs))e.setAttribute(k,v);e.innerHTML=html;return e;};
+  const move=(selector,target)=>{const el=document.querySelector(selector);if(el)target.append(el);return el;};
+
+  // Keep the actual existing controls and handlers. Move secondary source creation into Tools.
+  const tools=make('section',{class:'pro-tools pro-panel','data-pro-panel':'tools','aria-label':'Project and source tools'},'<header class="pro-panel-title"><span>04 / PROJECT</span><h2>Tools & output</h2></header>');
+  const toolsClose=make('button',{class:'pro-tools-close',type:'button','aria-label':'Close tools'},'×');
+  tools.prepend(toolsClose);
+  move('.project-meta',tools);
+  const sources=make('details',{class:'pro-secondary',open:''},'<summary>Source tools <span>Image · video · type · geometry</span></summary>');
+  move('.import-grid',sources);move('.media-help',sources);move('#mediaImportStatus',sources);tools.append(sources);
+  const output=make('details',{class:'pro-secondary',open:''},'<summary>Canvas & output <span>Aspect ratio and render resolution</span></summary>');
+  move('.stage-options',output);tools.append(output);
+  const projectActions=make('div',{class:'pro-project-actions'});
+  ['#newProject','label[for="projectUpload"]','#projectUpload','#saveProject','#exportPng'].forEach(s=>move(s,projectActions));
+  output.append(projectActions);
+  tools.append(make('p',{class:'pro-local-note'},'Media is processed on your device. Large sources and 4K output need more memory; use HD while editing on a phone.'));
+  workspace.append(tools);
+  toolsClose.onclick=()=>{document.body.classList.remove('pro-tools-open');setPanel('effects');};
+
+  document.querySelector('.library .panelhead h2').textContent='Effects';
+  document.querySelector('.library .panelhead .eyebrow').textContent='01 / PROCESSORS';
+  document.querySelector('.inspectorhead h2').textContent='Parameters';
+  document.querySelector('.inspectorhead .eyebrow').textContent='03 / SIGNAL CONTROL';
+  document.querySelector('.stage-label .eyebrow').textContent='02 / LIVE COMPOSITE';
+  document.querySelector('.sys-bus-code').textContent='BSEG 008 / SPECTRAL CONSOLE';
+  document.querySelector('.brand-num').textContent='// SPECTRAL CONSOLE 008';
+  document.querySelector('.guardian-caption').textContent='SPECTRAL PROTECTOR';
+  document.querySelector('.guardian-portrait').setAttribute('aria-label','Guardian artwork from the supplied console reference');
+  document.querySelector('.guardian-portrait img').alt='Guardian artwork from the approved console reference';
+  document.querySelector('.brand-credit').innerHTML='by <strong>GHOSTGIRL <span lang="zh-Hans">空舞</span></strong>';
+  $('openMedia').textContent='＋ Import';$('recordVideo').textContent='↗ Export video';
+  $('openMedia').setAttribute('aria-label','Import image or video');
+  const toolsButton=make('button',{class:'btn ghost',type:'button',id:'proToolsButton','aria-expanded':'false'},'Tools');
+  document.querySelector('.head-actions').append(toolsButton);
+  toolsButton.onclick=()=>{if(mobile.matches)setPanel('tools');else{document.body.classList.toggle('pro-tools-open');toolsButton.setAttribute('aria-expanded',String(document.body.classList.contains('pro-tools-open')));}};
+
+  const timeline=move('.timeline',workspace);
+  timeline.classList.add('pro-panel');timeline.dataset.proPanel='layers';
+  timeline.setAttribute('aria-label','Layers and timeline');
+  const timelineTitle=timeline.querySelector('.timelinehead h3');if(timelineTitle){timelineTitle.childNodes[0].textContent='Timeline ';}
+  library.classList.add('pro-panel');library.dataset.proPanel='effects';
+  inspector.classList.add('pro-panel');inspector.dataset.proPanel='tune';
+  const tabs=make('nav',{class:'pro-tabs','aria-label':'Editor panels'},['effects','tune','layers','tools'].map((v,i)=>`<button type="button" data-pro-tab="${v}" aria-pressed="${i===0}"><span>${['✧','☷','▱','⌘'][i]}</span>${['Effects','Tune','Layers','Tools'][i]}</button>`).join(''));
+  workspace.append(tabs);
+  function setPanel(value){panel=value;workspace.dataset.panel=value;tabs.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.proTab===value)));if(mobile.matches)document.body.classList.remove('pro-tools-open');}
+  tabs.addEventListener('click',e=>{const b=e.target.closest('[data-pro-tab]');if(b)setPanel(b.dataset.proTab);});
+  setPanel(panel);mobile.addEventListener('change',()=>{setPanel(panel);fitPreview();});
+
+  // A persistent, direct-access effects row. Repeat taps select the existing processor instead of duplicating it.
+  const core=[['echo','Echo'],['trails','Trails'],['chromatic','Prism'],['bloom','Glow'],['squeeze','Distort'],['depth','Depth'],['timewarp','Time'],['caustic','Liquid']];
+  const quick=make('section',{class:'pro-quick','aria-label':'Always-visible main effects'},'<div class="pro-quick-head"><span>CORE EFFECTS</span><button type="button" id="proScope" title="Switch effect target"></button></div><div class="pro-core-scroll" role="group" aria-label="Core effect shortcuts">'+core.map(([id,label])=>`<button type="button" data-core-fx="${id}" aria-pressed="false"><span>${EFFECT_BY_ID[id]?.icon||'◇'}</span>${label}</button>`).join('')+'</div>');
+  const quickTune=make('div',{class:'pro-quick-tune'},'<div class="pro-active-line"><strong id="proActiveName">Select an effect</strong><button type="button" id="proBypass" disabled aria-pressed="false">Bypass</button></div><label class="pro-strength-row"><span>Mix</span><input type="range" id="proStrength" aria-label="Selected effect mix" min="0" max="1" step="0.01" value="0" disabled><input type="number" id="proStrengthNumber" aria-label="Selected effect mix percent" min="0" max="100" step="1" value="0" disabled><span>%</span></label>');
+  center.append(quick,quickTune);
+  quick.addEventListener('click',e=>{const b=e.target.closest('[data-core-fx]');if(!b)return;const chain=activeChain(),idx=chain.findIndex(f=>f.id===b.dataset.coreFx);if(idx<0)addFx(b.dataset.coreFx);else{state.selectedFx=idx;inspectorTab='fx';renderInspector();}syncPro();});
+  $('proScope').onclick=()=>{state.fxScope=state.fxScope==='layer'?'master':'layer';state.selectedFx=0;renderInspector();store();syncPro();};
+  function mix(value){const fx=selectedEffect();if(!fx)return;fx.amount=Math.max(0,Math.min(1,Number(value)||0));store();const input=$('effectInspector').querySelector('[data-effect-prop="amount"]');if(input)input.value=fx.amount;const label=$('effectInspector').querySelector('[data-value-for="amount"]');if(label)label.textContent=fx.amount.toFixed(2);syncPro();}
+  $('proStrength').oninput=e=>mix(e.target.value);
+  $('proStrengthNumber').onchange=e=>mix(Number(e.target.value)/100);
+  $('proStrength').onchange=()=>renderInspector();
+  $('proBypass').onclick=()=>{const fx=selectedEffect();if(fx){fx.enabled=fx.enabled===false;renderInspector();store();syncPro();}};
+
+  // All effects remain searchable; the old initial filter was hiding most of the library.
+  category='All';renderLibrary();
+  const count=document.querySelector('[data-library-tab="effects"] small');if(count)count.textContent=String(EFFECTS.length);
+  const libraryName=document.querySelector('#effectsLibrary .section-caption span');if(libraryName)libraryName.textContent='PROCESSOR LIBRARY';
+  const renderBadge=make('span',{class:'pro-render-badge',id:'proRenderBadge'},renderer.gl?'GPU / WEBGL2':'LIMITED / CANVAS');
+  document.querySelector('.stage-top').append(renderBadge);
+  $('searchEffect').setAttribute('aria-label','Search all effects');
+  const help=make('div',{class:'pro-capability-note',role:'status'},'WebGL2 is unavailable in this browser. The five Tibetan-inspired processors still work; other processors need WebGL2.');
+  help.hidden=!!renderer.gl;library.insertBefore(help,$('effectsLibrary'));
+
+  // Number entry is paired with each existing slider, not an extra cosmetic control.
+  function numericControls(){
+    for(const root of [$('effectInspector'),$('layerInspector')])for(const range of root.querySelectorAll('input[type="range"]')){
+      if(range.dataset.proNumber)return;
+      const key=range.dataset.effectProp||range.dataset.layerProp;
+      if(!key)continue;
+      range.dataset.proNumber='true';
+      const number=make('input',{type:'number',class:'pro-value-input',min:range.min,max:range.max,step:range.step,'aria-label':`${key} precise value`});number.value=range.value;
+      const row=range.previousElementSibling;row?.querySelector('.value')?.replaceWith(number);
+      range.addEventListener('input',()=>{number.value=range.value;});
+      number.addEventListener('change',()=>{const v=Number(number.value);if(!Number.isFinite(v)){number.value=range.value;return;}range.value=String(Math.min(Number(range.max),Math.max(Number(range.min),v)));range.dispatchEvent(new Event('input',{bubbles:true}));number.value=range.value;syncPro();});
+    }
+  }
+  let syncPending=false;
+  function scheduleSync(){if(syncPending)return;syncPending=true;requestAnimationFrame(()=>{syncPending=false;syncPro();numericControls();});}
+  new MutationObserver(scheduleSync).observe(inspector,{childList:true,subtree:true});
+  new MutationObserver(scheduleSync).observe($('layerLanes'),{childList:true,subtree:true});
+  function syncPro(){
+    const fx=selectedEffect(),name=fx?EFFECT_BY_ID[fx.id]?.name||fx.id:'Choose an effect below';
+    if($('proActiveName').textContent!==name)$('proActiveName').textContent=name;
+    $('proScope').textContent=state.fxScope==='master'?'MASTER ↔':'LAYER ↔';
+    $('proStrength').disabled=!fx;$('proStrengthNumber').disabled=!fx;$('proBypass').disabled=!fx;
+    if(fx){if(document.activeElement!==$('proStrength'))$('proStrength').value=fx.amount;if(document.activeElement!==$('proStrengthNumber'))$('proStrengthNumber').value=String(Math.round(fx.amount*100));$('proBypass').setAttribute('aria-pressed',String(fx.enabled===false));$('proBypass').textContent=fx.enabled===false?'Bypassed':'Bypass';}
+    quick.querySelectorAll('[data-core-fx]').forEach(b=>{b.setAttribute('aria-pressed',String(fx?.id===b.dataset.coreFx));b.classList.toggle('in-chain',activeChain().some(f=>f.id===b.dataset.coreFx));});
+    if(state.layers.every(l=>l.type==='demo')){for(const l of state.layers)if(l.name==='Moon + stardust')l.name='Guardian reference';$('activeLayerName').textContent='Guardian reference';}
+  }
+  // The preview is fitted into its allocated area. Portrait media never pushes core effects off-screen.
+  function fitPreview(){const shell=$('stageShell'),unit=shell.querySelector('.monitor-unit'),screen=shell.querySelector('.stage-background');if(!unit||!screen)return;const css=getComputedStyle(shell),u=getComputedStyle(unit),n=v=>parseFloat(v)||0,rail=unit.querySelector('.monitor-rail');const w=Math.max(50,shell.clientWidth-n(css.paddingLeft)-n(css.paddingRight)-n(u.paddingLeft)-n(u.paddingRight)-n(u.borderLeftWidth)-n(u.borderRightWidth)),h=Math.max(35,shell.clientHeight-n(css.paddingTop)-n(css.paddingBottom)-n(u.paddingTop)-n(u.paddingBottom)-n(u.borderTopWidth)-n(u.borderBottomWidth)-(rail?.getBoundingClientRect().height||0)),ratio=stage.width/stage.height;screen.style.width=`${Math.min(w,h*ratio)}px`;screen.style.height=`${Math.min(h,w/ratio)}px`;screen.style.maxWidth='100%';}
+  new ResizeObserver(fitPreview).observe($('stageShell'));
+  new MutationObserver(fitPreview).observe(stage,{attributes:true,attributeFilter:['width','height']});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.body.classList.remove('pro-tools-open');toolsButton.setAttribute('aria-expanded','false');}});
+  document.addEventListener('click',e=>{if(!mobile.matches&&document.body.classList.contains('pro-tools-open')&&!tools.contains(e.target)&&e.target!==toolsButton)document.body.classList.remove('pro-tools-open');});
+  syncPro();numericControls();fitPreview();
+  window.__BSEG_UI__={version:'008',setPanel,sync:syncPro,fitPreview,getPanel:()=>panel};
+}
+mountProConsole();
+
+/* BSEG_UI_008_END */
 </script>
 </body>
 </html>
