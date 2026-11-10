@@ -139,8 +139,22 @@ const EFFECTS = [
   {id:'radial',name:'CELESTIAL VORTEX',category:'Mutations',desc:'Radial lens distortion',icon:'❂',colors:['#101f2d','#87bed3']},
   {id:'depth',name:'PARALLAX GHOST',category:'Dimensions',desc:'Parallax from luma or an authored depth map',icon:'◷',colors:['#152333','#a8c1d6']},
 ];
+EFFECTS.push(
+  {id:'echo',name:'CHRONO ECHO',category:'Echo',desc:'Temporal feedback from previous rendered frames',icon:'◌',colors:['#1e183b','#d8b5f7']},
+  {id:'trails',name:'GHOST TRAILS',category:'Trails',desc:'Long-exposure motion trails with spectral bleed',icon:'≋',colors:['#1e183b','#d8b5f7']},
+  {id:'timewarp',name:'TIME WARP',category:'Time',desc:'Warped frame-history time displacement',icon:'⌛',colors:['#1e183b','#d8b5f7']},
+  {id:'prismflare',name:'PRISMATIC LENS',category:'Optics',desc:'Multichannel optical diffraction and colour splits',icon:'✺',colors:['#1e183b','#d8b5f7']},
+  {id:'squeeze',name:'OPTICAL SQUEEZE',category:'Distortion',desc:'Elastic lens squeeze, pinch and ripple',icon:'◇',colors:['#1e183b','#d8b5f7']},
+  {id:'ghostdouble',name:'DOPPELGÄNGER',category:'Echo',desc:'Mirrored earlier-frame spectral double exposure',icon:'♧',colors:['#1e183b','#d8b5f7']},
+  {id:'caustic',name:'LIQUID CAUSTICS',category:'Distortion',desc:'Refractive high-frequency liquid motion',icon:'≈',colors:['#1e183b','#d8b5f7']},
+  {id:'feedback',name:'INFINITE FEEDBACK',category:'Trails',desc:'Cascading chromatic frame-memory recursion',icon:'↻',colors:['#1e183b','#d8b5f7']},
+  {id:'lens',name:'ANAMORPHIC VEIL',category:'Optics',desc:'Cinematic glass anamorphic field and barrel sway',icon:'◈',colors:['#1e183b','#d8b5f7']},
+  {id:'pulse',name:'SIGNAL BREATH',category:'Motion',desc:'Frequency-modulated image breathing and oscillation',icon:'◎',colors:['#1e183b','#d8b5f7']},
+  {id:'shred',name:'DIGITAL SHRED',category:'Distortion',desc:'Fragmented scan-slice displacement and spectral tears',icon:'▤',colors:['#1e183b','#d8b5f7']},
+  {id:'afterglow',name:'PHOSPHOR BLOOM',category:'Trails',desc:'RGB afterimage trails and coloured decay',icon:'✧',colors:['#1e183b','#d8b5f7']},
+);
 EFFECTS.push(...Object.entries(RITUAL_DEFS).map(([id,d])=>({id,name:d.name,category:'Tibetan-inspired',desc:d.subtitle,icon:d.icon,colors:['#26304e','#bbc0e5']})));
-const CATEGORIES = ['All','Tibetan-inspired','Sigils','Relics','Alchemy','Mutations','Radiance','Residue','Dimensions'];
+const CATEGORIES = ['All','Echo','Trails','Time','Distortion','Optics','Motion','Tibetan-inspired','Sigils','Relics','Alchemy','Mutations','Radiance','Residue','Dimensions'];
 const RECIPES = [
   {id:'ghost',name:'GHOSTGIRL / SILVER GHOST',subtitle:'Signal-poisoned type, residual phosphor and CRT ghosts',tags:'FONT  /  LIGHT  /  SCAN',effects:['ascii','bloom','scanlines']},
   {id:'acid',name:'DISSOLVE ANGEL',subtitle:'An overheated data stream losing its colour channels',tags:'THERMAL  /  BREAK  /  NOISE',effects:['thermal','glitch','grain']},
@@ -158,6 +172,9 @@ const FRAG = `#version 300 es
 precision highp float;
 uniform sampler2D u_tex;
 uniform sampler2D u_depthTex;
+uniform sampler2D u_history;
+uniform int u_hasHistory;
+uniform vec4 u_custom;
 uniform int u_hasDepth;
 uniform int u_keyColor;
 uniform float u_keyThreshold;
@@ -179,6 +196,7 @@ vec3 thermal(float x){
 float sampleL(vec2 uv){return luma(texture(u_tex,clamp(uv,0.0,1.0)).rgb);}
 void main(){
  vec2 uv=v_uv;float amount=clamp(u_amount,0.0,1.0);vec2 px=1.0/u_res;
+ uv=.5+(uv-.5)*vec2(1.0+(u_custom.z-.5)*.34,1.0-(u_custom.z-.5)*.34);
  vec4 source=texture(u_tex,uv);vec3 fx=source.rgb;
  if(u_mode==1){ // Glyph Grid
   float density=mix(70.0,135.0,amount);vec2 cell=vec2(density,density*u_res.y/u_res.x);
@@ -278,25 +296,86 @@ void main(){
    vec2 drift=vec2(sin(u_time*.74),cos(u_time*.61));
    vec2 delta=(d-.5)*drift*amount*.14;
    fx=texture(u_tex,clamp(uv+delta,0.0,1.0)).rgb;
- } else if(u_mode==24){ // Chroma key after the layer's effect stack
+ } else if(u_mode==24){ // Echo: live feedback
+  vec3 older=u_hasHistory==1?texture(u_history,clamp(uv+vec2((u_custom.y-.5)*.1,0.),0.,1.)).rgb:source.rgb;
+  fx=mix(source.rgb,older,.6+u_custom.w*.35);
+ } else if(u_mode==25){ // Trails: cumulative persistence
+  vec2 drift=vec2((u_custom.y-.5)*.08,(u_custom.z-.5)*.07);
+  vec3 older=u_hasHistory==1?texture(u_history,clamp(uv-drift,0.,1.)).rgb:source.rgb;
+  fx=max(source.rgb*.64,older*(.72+u_custom.w*.26));
+ } else if(u_mode==26){ // Time-warped prior frame
+  float wave=sin(uv.y*(14.+u_custom.x*58.)+u_time*(.5+u_custom.w*7.));
+  vec2 shifted=clamp(uv+vec2(wave*(u_custom.y-.5)*.14,cos(uv.x*21.-u_time)*.02*u_custom.z),0.,1.);
+  fx=u_hasHistory==1?mix(texture(u_history,shifted).rgb,source.rgb,.22):texture(u_tex,shifted).rgb;
+ } else if(u_mode==27){ // Spectral diffraction
+  vec2 o=vec2(.006+u_custom.y*.038,0.)*(.4+u_custom.x);
+  fx=vec3(texture(u_tex,clamp(uv+o,0.,1.)).r,texture(u_tex,uv).g,texture(u_tex,clamp(uv-o,0.,1.)).b);
+  fx+=vec3(.12,.06,.19)*pow(max(0.,sin(uv.y*100.-u_time*2.)),9.)*u_custom.w;
+ } else if(u_mode==28){ // Elastic squeeze
+  vec2 p=uv-.5;float r=length(p);
+  p.x*=1.+(u_custom.x-.5)*1.4;
+  p.y*=1.+(u_custom.y-.5)*1.2;
+  p+=normalize(p+vec2(.001))*.04*sin(r*(18.+u_custom.z*44.)-u_time*(1.+u_custom.w*6.));
+  fx=texture(u_tex,clamp(.5+p,0.,1.)).rgb;
+ } else if(u_mode==29){ // Time echo double
+  vec2 echoUV=vec2(1.-uv.x,uv.y)+vec2((u_custom.y-.5)*.15,(u_custom.z-.5)*.1);
+  vec3 old=u_hasHistory==1?texture(u_history,clamp(echoUV,0.,1.)).rgb:texture(u_tex,clamp(echoUV,0.,1.)).rgb;
+  fx=mix(source.rgb,old,.25+u_custom.w*.6);
+ } else if(u_mode==30){ // Glass liquid caustics
+  vec2 p=uv;
+  float f=16.+u_custom.x*84.;
+  p.x+=sin(p.y*f+u_time*(1.+u_custom.w*5.))*u_custom.y*.038;
+  p.y+=cos(p.x*f*.83-u_time*(1.+u_custom.w*4.))*u_custom.z*.038;
+  fx=texture(u_tex,clamp(p,0.,1.)).rgb;
+ } else if(u_mode==31){ // Recursive spectral feedback
+  vec2 p=uv-.5;float a=(u_custom.y-.5)*.2;
+  vec2 q=.5+mat2(cos(a),-sin(a),sin(a),cos(a))*p*(.985+u_custom.z*.025);
+  vec3 old=u_hasHistory==1?texture(u_history,clamp(q,0.,1.)).rgb:source.rgb;
+  fx=mix(source.rgb,old,.48+u_custom.w*.45)*vec3(1.04,1.,1.06);
+ } else if(u_mode==32){ // Anamorphic optics
+  vec2 p=uv-.5;float r=dot(p,p),warp=1.+r*(u_custom.x-.5)*2.;
+  vec2 q=.5+p*warp+vec2(sin(u_time*.6)*u_custom.y*.02,cos(u_time*.7)*u_custom.z*.025);
+  fx=texture(u_tex,clamp(q,0.,1.)).rgb;
+ } else if(u_mode==33){ // Breathing motion
+  vec2 p=uv-.5;float wave=sin(u_time*(.3+u_custom.w*6.));
+  vec2 q=.5+p*(1.+wave*(.01+u_custom.x*.13));
+  q+=vec2(sin(uv.y*12.+u_time)*u_custom.y*.015,cos(uv.x*12.-u_time)*u_custom.z*.015);
+  fx=texture(u_tex,clamp(q,0.,1.)).rgb;
+ } else if(u_mode==34){ // Sliced signal
+  float band=floor(uv.y*(16.+u_custom.x*200.));
+  float jump=hash(vec2(band,floor(u_time*(1.+u_custom.w*23.))));
+  vec2 q=uv+vec2((jump-.5)*step(.55,jump)*u_custom.y*.25,0.);
+  fx=texture(u_tex,clamp(q,0.,1.)).rgb;
+  fx+=vec3(.08,0.,.13)*step(.91,jump)*u_custom.z;
+ } else if(u_mode==35){ // Phosphor afterimage
+  vec3 old=u_hasHistory==1?texture(u_history,clamp(uv+vec2(.006*(u_custom.y-.5),.006*(u_custom.z-.5)),0.,1.)).rgb:source.rgb;
+  fx=max(source.rgb*.7,old*vec3(.85+u_custom.w*.12,.8,.95));
+ } else if(u_mode==50){ // Chroma key after the layer's effect stack
    float dominance=u_keyColor==1?source.g-max(source.r,source.b):source.b-max(source.r,source.g);
    float alpha=1.0-smoothstep(u_keyThreshold-u_keySoftness,u_keyThreshold+u_keySoftness,dominance);
    outColor=vec4(source.rgb,source.a*alpha);return;
  }
- outColor=vec4(clamp(mix(source.rgb,fx,amount),0.0,1.0),source.a);
+ vec3 processed=mix(source.rgb,fx,amount);
+ processed=(processed-.5)*(0.65+u_custom.x*.7)+.5;
+ processed=clamp(processed+vec3(u_custom.y-.5)*.1,0.,1.);
+ outColor=vec4(clamp(processed,0.0,1.0),source.a);
 }`;
 function compile(gl,type,source){const shader=gl.createShader(type);gl.shaderSource(shader,source);gl.compileShader(shader);if(!gl.getShaderParameter(shader,gl.COMPILE_STATUS))throw new Error(gl.getShaderInfoLog(shader));return shader;}
 function makeTexture(gl,w,h){const tex=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,tex);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,w,h,0,gl.RGBA,gl.UNSIGNED_BYTE,null);return tex;}
 class EffectRenderer {
- constructor(canvas,transparent=false){this.canvas=canvas;this.gl=canvas.getContext('webgl2',{preserveDrawingBuffer:true,alpha:transparent,premultipliedAlpha:!transparent,antialias:false});if(!this.gl){this.fallback=canvas.getContext('2d');return;}const gl=this.gl;const p=gl.createProgram();gl.attachShader(p,compile(gl,gl.VERTEX_SHADER,VERT));gl.attachShader(p,compile(gl,gl.FRAGMENT_SHADER,FRAG));gl.linkProgram(p);if(!gl.getProgramParameter(p,gl.LINK_STATUS))throw new Error(gl.getProgramInfoLog(p));this.program=p;this.uniforms=Object.fromEntries(['u_tex','u_depthTex','u_hasDepth','u_keyColor','u_keyThreshold','u_keySoftness','u_res','u_amount','u_time','u_mode','u_audio'].map(k=>[k,gl.getUniformLocation(p,k)]));gl.useProgram(p);const buffer=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,-1,1,1,-1,1,1]),gl.STATIC_DRAW);const loc=gl.getAttribLocation(p,'a_pos');gl.enableVertexAttribArray(loc);gl.vertexAttribPointer(loc,2,gl.FLOAT,false,0,0);this.w=0;this.h=0;this.resize(canvas.width,canvas.height);}
- resize(w,h){if(this.w===w&&this.h===h)return;this.canvas.width=w;this.canvas.height=h;this.w=w;this.h=h;if(!this.gl)return;const gl=this.gl;this.textures?.forEach(t=>gl.deleteTexture(t));this.framebuffers?.forEach(f=>gl.deleteFramebuffer(f));this.textures=[makeTexture(gl,w,h),makeTexture(gl,w,h),makeTexture(gl,w,h),makeTexture(gl,w,h)];this.framebuffers=this.textures.slice(1,3).map(tex=>{const fb=gl.createFramebuffer();gl.bindFramebuffer(gl.FRAMEBUFFER,fb);gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,tex,0);if(gl.checkFramebufferStatus(gl.FRAMEBUFFER)!==gl.FRAMEBUFFER_COMPLETE)throw new Error('Framebuffer unavailable');return fb;});gl.bindFramebuffer(gl.FRAMEBUFFER,null);gl.viewport(0,0,w,h);}
+ constructor(canvas,transparent=false){this.canvas=canvas;this.gl=canvas.getContext('webgl2',{preserveDrawingBuffer:true,alpha:transparent,premultipliedAlpha:!transparent,antialias:false});if(!this.gl){this.fallback=canvas.getContext('2d');return;}const gl=this.gl;const p=gl.createProgram();gl.attachShader(p,compile(gl,gl.VERTEX_SHADER,VERT));gl.attachShader(p,compile(gl,gl.FRAGMENT_SHADER,FRAG));gl.linkProgram(p);if(!gl.getProgramParameter(p,gl.LINK_STATUS))throw new Error(gl.getProgramInfoLog(p));this.program=p;this.uniforms=Object.fromEntries(['u_tex','u_depthTex','u_history','u_hasHistory','u_custom','u_hasDepth','u_keyColor','u_keyThreshold','u_keySoftness','u_res','u_amount','u_time','u_mode','u_audio'].map(k=>[k,gl.getUniformLocation(p,k)]));gl.useProgram(p);const buffer=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,-1,1,1,-1,1,1]),gl.STATIC_DRAW);const loc=gl.getAttribLocation(p,'a_pos');gl.enableVertexAttribArray(loc);gl.vertexAttribPointer(loc,2,gl.FLOAT,false,0,0);this.w=0;this.h=0;this.resize(canvas.width,canvas.height);}
+ resize(w,h){if(this.w===w&&this.h===h)return;this.canvas.width=w;this.canvas.height=h;this.w=w;this.h=h;if(!this.gl)return;const gl=this.gl;this.textures?.forEach(t=>gl.deleteTexture(t));this.framebuffers?.forEach(f=>gl.deleteFramebuffer(f));this.textures=[makeTexture(gl,w,h),makeTexture(gl,w,h),makeTexture(gl,w,h),makeTexture(gl,w,h),makeTexture(gl,w,h)];this.historyReady=false;this.framebuffers=this.textures.slice(1,3).map(tex=>{const fb=gl.createFramebuffer();gl.bindFramebuffer(gl.FRAMEBUFFER,fb);gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,tex,0);if(gl.checkFramebufferStatus(gl.FRAMEBUFFER)!==gl.FRAMEBUFFER_COMPLETE)throw new Error('Framebuffer unavailable');return fb;});gl.bindFramebuffer(gl.FRAMEBUFFER,null);gl.viewport(0,0,w,h);}
  render(source,chain,time=0,audio={bass:0,mid:0,high:0,mix:0},options={}){
   if(!this.gl){this.fallback.clearRect(0,0,this.canvas.width,this.canvas.height);this.fallback.drawImage(source,0,0,this.canvas.width,this.canvas.height);return;}
-  const gl=this.gl,u=this.uniforms;gl.useProgram(this.program);gl.viewport(0,0,this.w,this.h);gl.disable(gl.BLEND);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,this.textures[0]);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,source);gl.uniform1i(u.u_tex,0);gl.uniform1i(u.u_depthTex,1);gl.uniform1i(u.u_hasDepth,options.depthMap?1:0);gl.uniform1i(u.u_keyColor,options.keyColor==='green'?1:2);gl.uniform1f(u.u_keyThreshold,options.keyThreshold??.16);gl.uniform1f(u.u_keySoftness,options.keySoftness??.08);if(options.depthMap){gl.activeTexture(gl.TEXTURE1);gl.bindTexture(gl.TEXTURE_2D,this.textures[3]);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,options.depthMap);gl.activeTexture(gl.TEXTURE0);}gl.uniform2f(u.u_res,this.w,this.h);gl.uniform1f(u.u_time,time);gl.uniform4f(u.u_audio,audio.bass||0,audio.mid||0,audio.high||0,audio.mix||0);
+  const gl=this.gl,u=this.uniforms;
+  if(options.scopeKey!==undefined&&this.lastScope!==options.scopeKey){this.historyReady=false;this.lastScope=options.scopeKey;}
+  gl.useProgram(this.program);gl.viewport(0,0,this.w,this.h);gl.disable(gl.BLEND);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,this.textures[0]);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,source);gl.uniform1i(u.u_tex,0);gl.uniform1i(u.u_depthTex,1);
+  gl.activeTexture(gl.TEXTURE2);gl.bindTexture(gl.TEXTURE_2D,this.textures[4]);gl.uniform1i(u.u_history,2);gl.uniform1i(u.u_hasHistory,this.historyReady?1:0);gl.activeTexture(gl.TEXTURE0);gl.uniform1i(u.u_hasDepth,options.depthMap?1:0);gl.uniform1i(u.u_keyColor,options.keyColor==='green'?1:2);gl.uniform1f(u.u_keyThreshold,options.keyThreshold??.16);gl.uniform1f(u.u_keySoftness,options.keySoftness??.08);if(options.depthMap){gl.activeTexture(gl.TEXTURE1);gl.bindTexture(gl.TEXTURE_2D,this.textures[3]);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,options.depthMap);gl.activeTexture(gl.TEXTURE0);}gl.uniform2f(u.u_res,this.w,this.h);gl.uniform1f(u.u_time,time);gl.uniform4f(u.u_audio,audio.bass||0,audio.mid||0,audio.high||0,audio.mix||0);
   let input=0,pass=0;
   const active=chain.filter(x=>x.enabled!==false&&MODE[x.id]);if(options.keyColor&&options.keyColor!=='off')active.push({id:'__keyer',amount:1});
-  for(const fx of active){const output=1+pass%2;gl.bindFramebuffer(gl.FRAMEBUFFER,this.framebuffers[pass%2]);gl.bindTexture(gl.TEXTURE_2D,this.textures[input]);gl.uniform1i(u.u_mode,fx.id==='__keyer'?24:MODE[fx.id]);gl.uniform1f(u.u_amount,Math.min(1,Math.max(0,fx.amount)));gl.drawArrays(gl.TRIANGLES,0,6);input=output;pass++;}
-  gl.bindFramebuffer(gl.FRAMEBUFFER,null);gl.bindTexture(gl.TEXTURE_2D,this.textures[input]);gl.uniform1i(u.u_mode,0);gl.uniform1f(u.u_amount,1);gl.drawArrays(gl.TRIANGLES,0,6);
+  for(const fx of active){const output=1+pass%2;gl.bindFramebuffer(gl.FRAMEBUFFER,this.framebuffers[pass%2]);gl.bindTexture(gl.TEXTURE_2D,this.textures[input]);gl.uniform1i(u.u_mode,fx.id==='__keyer'?50:MODE[fx.id]);gl.uniform1f(u.u_amount,Math.min(1,Math.max(0,fx.amount)));gl.uniform4f(u.u_custom,fx.tuneA??.5,fx.tuneB??.5,fx.tuneC??.5,fx.tuneD??.5);gl.drawArrays(gl.TRIANGLES,0,6);input=output;pass++;}
+  gl.bindFramebuffer(gl.FRAMEBUFFER,null);gl.bindTexture(gl.TEXTURE_2D,this.textures[input]);gl.uniform1i(u.u_mode,0);gl.uniform1f(u.u_amount,1);gl.uniform4f(u.u_custom,.5,.5,.5,.5);gl.drawArrays(gl.TRIANGLES,0,6);
+  gl.activeTexture(gl.TEXTURE2);gl.bindTexture(gl.TEXTURE_2D,this.textures[4]);try{gl.copyTexSubImage2D(gl.TEXTURE_2D,0,0,0,0,0,this.w,this.h);this.historyReady=true;}catch(e){this.historyReady=false;}gl.activeTexture(gl.TEXTURE0);
  }
 }
 
@@ -624,6 +703,10 @@ function rangeControl(label,key,val,min,max,step=1,unit='',keyable=false,section
  const display=Number(val).toFixed(step<1?step===.01?2:1:0)+unit;
  return `<div class="controlrow"><label>${esc(label)}</label><span><span class="value" data-value-for="${key}">${display}</span> ${keyable?`<button class="keybtn" data-keyframe="${section}:${key}" title="Set keyframe at ${formatTime(state.time)}">◇</button>`:''}</span></div><input class="rangefull" type="range" data-${section}-prop="${key}" min="${min}" max="${max}" step="${step}" value="${val}" />`;
 }
+function advancedControls(fx){
+ const isTemporal=['echo','trails','timewarp','ghostdouble','feedback','afterglow'].includes(fx.id);
+ return `<div class="fx-fine-tune"><div class="eyebrow">ADVANCED SIGNAL PROCESSING / FOUR-AXIS CONTROL</div>${rangeControl('Detail / frequency','tuneA',fx.tuneA??.5,0,1,.01,'',false,'effect')}${rangeControl('Chromatic bias / X displacement','tuneB',fx.tuneB??.5,0,1,.01,'',false,'effect')}${rangeControl('Optical squeeze / Y displacement','tuneC',fx.tuneC??.5,0,1,.01,'',false,'effect')}${rangeControl(isTemporal?'Feedback decay / temporal memory':'Motion / decay','tuneD',fx.tuneD??.5,0,1,.01,'',false,'effect')}<div class="fx-tune-legend">Fine-tune each processor independently. Values render in real time on WebGL2; frame-history effects reset when the playhead jumps.</div></div>`;
+}
 function renderInspector(){
  const chain=activeChain(),l=chosenLayer();
  $('scopeLabel').textContent=state.fxScope==='master'?'Applied to the complete composition after all layers':`Applied only to: ${l?.name||'No layer selected'}`;
@@ -631,7 +714,7 @@ function renderInspector(){
  $('effectStackCount').textContent=chain.length;
  $('effectStack').innerHTML=chain.map((e,i)=>{const def=EFFECT_BY_ID[e.id];return `<div class="stack-card ${i===state.selectedFx?'active':''}"><span class="stack-number">${String(i+1).padStart(2,'0')}</span><input type="checkbox" ${e.enabled?'checked':''} data-enable-fx="${i}" aria-label="Enable ${def?.name}" /><button class="stack-name" data-select-fx="${i}">${def?.name||esc(e.id)}${e.audioBand&&e.audioBand!=='off'?' ♪':''}</button><span class="mini-controls"><button title="Move up" data-up-fx="${i}">↑</button><button title="Move down" data-down-fx="${i}">↓</button><button title="Remove" data-remove-fx="${i}">×</button></span></div>`;}).join('')||'<div class="empty-state">No effects in this scope. Choose an effect from the library.</div>';
  const fx=selectedEffect(),def=fx&&EFFECT_BY_ID[fx.id];
- $('effectInspector').innerHTML=fx&&def?`<div class="detailcard"><div class="eyebrow">EDITABLE EFFECT / ${state.fxScope.toUpperCase()}</div><h3>${def.name}</h3><p>${def.desc}. ${RITUAL_DEFS[fx.id]?'Local video processor with independent settings.':'Uses WebGL2 processing when available.'}</p>${rangeControl('Strength','amount',fx.amount,0,1,.01,'',true,'effect')}${ritualControls(fx)}<label class="field-label">AUDIO MODULATION</label><select id="effectAudioBand" class="field">${['off','bass','mid','high','mix'].map(k=>`<option value="${k}" ${(fx.audioBand||'off')===k?'selected':''}>${{off:'Off',bass:'Bass',mid:'Mid',high:'Treble',mix:'Full mix'}[k]}</option>`).join('')}</select>${rangeControl('Audio response','audioGain',fx.audioGain??1,0,2,.01,'',false,'effect')}<p class="hint">Each effect has its own audio routing. Stack order determines the final image; ◇ stores a strength keyframe.</p></div>`:'';
+ $('effectInspector').innerHTML=fx&&def?`<div class="detailcard"><div class="eyebrow">EDITABLE EFFECT / ${state.fxScope.toUpperCase()}</div><h3>${def.name}</h3><p>${def.desc}. ${RITUAL_DEFS[fx.id]?'Local video processor with independent settings.':'Uses WebGL2 processing when available.'}</p>${rangeControl('Strength','amount',fx.amount,0,1,.01,'',true,'effect')}${ritualControls(fx)}${advancedControls(fx)}<label class="field-label">AUDIO MODULATION</label><select id="effectAudioBand" class="field">${['off','bass','mid','high','mix'].map(k=>`<option value="${k}" ${(fx.audioBand||'off')===k?'selected':''}>${{off:'Off',bass:'Bass',mid:'Mid',high:'Treble',mix:'Full mix'}[k]}</option>`).join('')}</select>${rangeControl('Audio response','audioGain',fx.audioGain??1,0,2,.01,'',false,'effect')}<p class="hint">Each effect has its own audio routing. Stack order determines the final image; ◇ stores a strength keyframe.</p></div>`:'';
  $('layerInspector').innerHTML=makeLayerInspector();
  $('fxPanel').hidden=inspectorTab!=='fx';$('layerPanel').hidden=inspectorTab!=='layer';$('soundPanel').hidden=inspectorTab!=='sound';document.querySelectorAll('[data-inspector-tab]').forEach(b=>b.classList.toggle('active',b.dataset.inspectorTab===inspectorTab));
  $('audioBand').value=state.audioBand;$('audioGain').value=state.audioGain;$('audioGainValue').textContent=state.audioGain.toFixed(2);
@@ -715,7 +798,7 @@ function deleteLayer(){const l=chosenLayer();if(!l)return;const m=media.get(l.id
 function setKeyframe(scope,key){const now=Math.round(state.time*100)/100;if(scope==='effect'){const fx=selectedEffect();if(!fx)return;fx.keys??=[];fx.keys=fx.keys.filter(k=>Math.abs(k.t-now)>.01);fx.keys.push({t:now,v:fx.amount});}else{const l=chosenLayer();if(!l)return;l.keyframes??={};const keys=l.keyframes[key]||[];l.keyframes[key]=keys.filter(k=>Math.abs(k.t-now)>.01).concat({t:now,v:l[key]});}refresh();store();notify(`Keyframe set at ${formatTime(now)}`);}
 function playMedia(){audio.init().catch(()=>{});syncVideoAudio();for(const l of state.layers)if(l.type==='video'&&l.visible)media.get(l.id)?.element.play().catch(e=>notify('Press Play again to enable video playback.'));audio.play().catch(()=>{});}
 function pauseMedia(){for(const l of state.layers)if(l.type==='video')media.get(l.id)?.element.pause();audio.pause();}
-function seek(t){state.time=Math.min(state.duration,Math.max(0,t));for(const l of state.layers)if(l.type==='video'){const e=media.get(l.id)?.element;if(e&&Number.isFinite(e.duration)&&e.duration>0){const target=Math.min(state.time,Math.max(0,e.duration-.001));if(Math.abs(e.currentTime-target)>.015)e.currentTime=target;}}audio.seek(state.time);updateTransport();}
+function seek(t){renderer.historyReady=false;pipeline.renderer.historyReady=false;state.time=Math.min(state.duration,Math.max(0,t));for(const l of state.layers)if(l.type==='video'){const e=media.get(l.id)?.element;if(e&&Number.isFinite(e.duration)&&e.duration>0){const target=Math.min(state.time,Math.max(0,e.duration-.001));if(Math.abs(e.currentTime-target)>.015)e.currentTime=target;}}audio.seek(state.time);updateTransport();}
 function togglePlay(force){state.playing=typeof force==='boolean'?force:!state.playing;if(state.playing){if(state.time>=state.duration)seek(0);playMedia();}else pauseMedia();updateTransport();}
 function download(blob,name){const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),10000);}
 function safeName(){return (state.name||'vfx-01').replace(/[^\w-]+/g,'_').slice(0,50)||'vfx-01';}
