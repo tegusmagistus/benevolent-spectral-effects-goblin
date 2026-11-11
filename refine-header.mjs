@@ -8,8 +8,8 @@ html=html.replace(/<link\s+href="console-metal\.css[^\"]*"\s+rel="stylesheet"\s*
 html=html.replace(/<script\s+src="console-refinements\.js[^\"]*"><\/script>/g,'');
 html=html.replace('</head>','<link href="console-refinements.css?v=009" rel="stylesheet"/>\n<link href="console-metal.css?v=011" rel="stylesheet"/>\n</head>');
 html=html.replace('</body>','<script src="console-refinements.js?v=009"></script>\n</body>');
-// The reference is source artwork, not an effect name. Keep its UI label neutral.
 html=html.replaceAll('Guardian reference','Preview');
 new Function(readFileSync('public/console-refinements.js','utf8'));
 writeFileSync(path,html);
-console.log('BSEG 011: refined silver typography, reflective sigil-metal borders; existing engine and layout preserved.');
+console.log('BSEG 011 finish preserved.');
+await import('./deep-build.mjs');
