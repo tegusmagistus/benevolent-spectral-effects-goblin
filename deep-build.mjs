@@ -18,6 +18,6 @@ if(!h.includes('/* D12_PATCHED_ENGINE */')){
  once('gl.bindTexture(gl.TEXTURE_2D,this.textures[input]);gl.uniform1i(u.u_mode,0);','gl.bindTexture(gl.TEXTURE_2D,this.textures[input]);gl.uniform1i(u.u_deep,0);gl.uniform1i(u.u_mode,0);','final copy');
 }
 const moduleStart=h.indexOf('<script type="module">'),moduleEnd=h.indexOf('</script>',moduleStart);if(moduleEnd<0)throw Error('Engine module not found');
-h=h.slice(0,moduleEnd)+'\n'+start+'\n'+read('deep-controls.js')+'\n'+end+'\n'+h.slice(moduleEnd);
+h=h.slice(0,moduleEnd)+'\n'+start+'\n'+read('deep-controls.js')+'\n'+read('deep-ergonomics.js')+'\n'+end+'\n'+h.slice(moduleEnd);
 for(const m of h.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g))if(m[1].trim())new Function(m[1]);
 writeFileSync(file,h);console.log('BSEG Depth Lab 012 applied.');
