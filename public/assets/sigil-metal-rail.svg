@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="48" preserveAspectRatio="none" viewBox="0 0 900 48" fill="none">
+ <defs><linearGradient id="m" x1="0" y1="3" x2="0" y2="45" gradientUnits="userSpaceOnUse"><stop stop-color="#12162d"/><stop offset=".12" stop-color="#b2bedd"/><stop offset=".22" stop-color="#fff7ff"/><stop offset=".37" stop-color="#747c9c"/><stop offset=".48" stop-color="#252641"/><stop offset=".52" stop-color="#e9faff"/><stop offset=".66" stop-color="#a295c4"/><stop offset=".8" stop-color="#f4d4ed"/><stop offset=".88" stop-color="#fff9ff"/><stop offset="1" stop-color="#515069"/></linearGradient>
+ <g id="wing" stroke-linecap="round"><path d="M0 12H340C384 12 398 35 445 24C402 41 380 24 340 24H0" fill="url(#m)" stroke="#d5d3ee" stroke-width="1"/><path d="M0 32H302C359 32 375 12 418 13L448 24C398 1 387 30 341 34H0" fill="url(#m)" stroke="#686c91" stroke-width=".7"/><path d="M3 14H337C385 14 399 37 443 24M2 34H300C357 34 375 15 412 15" stroke="#fff4ff" stroke-width="1"/><path d="M343 4C368 22 401 17 434 24C399 18 375 31 343 42C365 28 374 16 343 4Z" fill="url(#m)" stroke="#d6c3e6" stroke-width=".7"/></g></defs>
+ <use href="#wing"/><use href="#wing" transform="translate(900 0) scale(-1 1)"/>
+ <path d="M450 3L460 17L480 24L460 31L450 45L440 31L420 24L440 17Z" fill="url(#m)" stroke="#f7eaff" stroke-width=".7"/>
+ <path d="M450 14L460 24L450 35L440 24Z" fill="#171c35" stroke="#c2cde9" stroke-width="1"/>
+ <path d="M450 17L455 24L450 32L445 24Z" fill="url(#m)"/>
+</svg>

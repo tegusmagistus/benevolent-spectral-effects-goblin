@@ -1,0 +1,83 @@
+/* BSEG 011 — editorial silver typography and forged-sigil chrome. Presentation only. */
+html body.pro-console.bseg-009 .logo-line {
+ font-family:'Baskerville','Iowan Old Style','Palatino Linotype','Book Antiqua','URW Palladio L',Georgia,serif!important;
+ font-weight:400!important;font-style:italic!important;font-synthesis:none;
+ -webkit-text-stroke:0!important;letter-spacing:-.025em!important;
+ background:linear-gradient(176deg,#fff9ff 0%,#e7deee 22%,#a8a6c6 43%,#fff5ff 52%,#c9d9ed 70%,#e9cfe6 92%)!important;
+ background-clip:text!important;-webkit-background-clip:text!important;
+ color:transparent!important;text-shadow:none!important;
+ filter:drop-shadow(0 1px 0 #252338) drop-shadow(0 0 3px #c6b0e52b)!important;
+}
+html body.pro-console.bseg-009 .logo-sub {gap:.26em!important;letter-spacing:.015em!important;}
+html body.pro-console.bseg-009 .goblin-word {
+ font-family:inherit;font-weight:400!important;font-size:1.5em!important;
+ letter-spacing:-.045em!important;-webkit-text-stroke:0!important;
+ background:linear-gradient(172deg,#fff8ff,#c9bad7 33%,#f4faff 50%,#bdc6e2 73%,#f5d3e8)!important;
+ background-clip:text!important;-webkit-background-clip:text!important;color:transparent!important;
+}
+html body.pro-console.bseg-009 .brand-credit {font-weight:400!important;letter-spacing:.31em!important;color:#d9cee4!important;}
+html body.pro-console.bseg-009 .panelhead h2,
+html body.pro-console.bseg-009 .detailcard h3,
+html body.pro-console.bseg-009 .timelinehead h3,
+html body.pro-console.bseg-009 .pro-panel-title h2 {
+ font-family:'Baskerville','Iowan Old Style','Palatino Linotype',Georgia,serif!important;
+ font-style:italic!important;font-weight:400!important;letter-spacing:.018em!important;color:#ecdfef!important;
+}
+/* Metal has dark bevel troughs and narrow bright reflections, not a broad glow. */
+html body.pro-console.bseg-009 #app,
+html body.pro-console.bseg-009 .sidebar,
+html body.pro-console.bseg-009 .timeline,
+html body.pro-console.bseg-009 .monitor-unit {
+ position:relative!important;border-image:none!important;border-color:#34314b!important;
+ box-shadow:inset 0 1px 0 #f8edff8c,inset 1px 0 0 #c6d9f080,inset 0 -1px 0 #55516e,0 1px 4px #000a!important;
+}
+html body.pro-console.bseg-009 #app::before,
+html body.pro-console.bseg-009 .sidebar::after,
+html body.pro-console.bseg-009 .timeline::after,
+html body.pro-console.bseg-009 .monitor-unit::after {
+ content:'';position:absolute;inset:-6px;pointer-events:none!important;z-index:12;
+ border:30px solid transparent;border-image:url('assets/sigil-metal-frame.svg') 64 / 30px / 0 stretch;
+ background:none!important;box-shadow:none!important;
+}
+html body.pro-console.bseg-009 #app::before{inset:-8px;border-image-width:40px;}
+html body.pro-console.bseg-009 .monitor-unit::after{inset:-7px;border-image-width:27px;}
+html body.pro-console.bseg-009 .timeline::after{inset:-5px;border-image-width:24px;}
+html body.pro-console.bseg-009 .topbar::after {
+ height:22px!important;left:0!important;right:0!important;bottom:0!important;
+ background:url('assets/sigil-metal-rail.svg') center/100% 100% no-repeat!important;
+ filter:drop-shadow(0 1px 1px #050613);opacity:1!important;pointer-events:none!important;
+}
+html body.pro-console.bseg-009 .center {
+ border:1px solid #a899c3!important;
+ box-shadow:inset 0 1px #eee6ff60,0 1px 0 #060916!important;
+}
+html body.pro-console.bseg-009 .btn,
+html body.pro-console.bseg-009 .little,
+html body.pro-console.bseg-009 .pro-core-scroll button {
+ border-color:#a49ebc!important;
+ background:linear-gradient(155deg,#5d586f 0%,#272b44 15%,#121a2d 51%,#1b1c32 76%,#514862 100%)!important;
+ box-shadow:inset 0 1px 0 #f9e9ff9c,inset 1px 0 0 #c0dced4d,inset 0 -1px 0 #6c6081,0 2px 4px #0005!important;
+}
+html body.pro-console.bseg-009 .btn.primary {
+ background:linear-gradient(145deg,#f8eafa 0%,#d3c4e0 18%,#968ba9 44%,#dce5ef 52%,#c1aecf 74%,#f6dfe9 100%)!important;
+ color:#211d33!important;border-color:#e5d8ed!important;text-shadow:0 1px #fff5!important;
+}
+html body.pro-console.bseg-009 .pro-core-scroll button[aria-pressed=true] {
+ border-color:#e7c5f0!important;background:linear-gradient(145deg,#796889,#27233f 55%,#514166)!important;
+}
+html body.pro-console.bseg-009 .pro-tabs button[aria-pressed=true] {
+ border-color:#bda4cd;background:linear-gradient(150deg,#45344f,#191d32);box-shadow:inset 0 1px #d6c5e566;
+}
+/* Keep touch targets, scroll containers and media sizes from the verified console. */
+@media(max-width:1000px){
+ html body.pro-console.bseg-009 .logo-main{letter-spacing:-.035em!important;}
+ html body.pro-console.bseg-009 .logo-sub{font-size:10px!important;gap:.23em!important;letter-spacing:0!important;}
+ html body.pro-console.bseg-009 .goblin-word{font-size:1.6em!important;}
+ html body.pro-console.bseg-009 #app::before{inset:-4px;border-image-width:24px;}
+ html body.pro-console.bseg-009 .sidebar::after{inset:-4px;border-image-width:23px;}
+ html body.pro-console.bseg-009 .monitor-unit::after{inset:-5px;border-image-width:23px;}
+ html body.pro-console.bseg-009 .topbar::after{height:10px!important;}
+ html body.pro-console.bseg-009 .timeline::after{inset:-4px;border-image-width:20px;}
+}
+@media(max-width:360px){html body.pro-console.bseg-009 .logo-sub{font-size:9px!important;}.logo-main{max-width:100%;}}
+@media(max-width:1000px) and (max-height:500px) and (orientation:landscape){html body.pro-console.bseg-009 .logo-sub{font-size:12px!important;}}

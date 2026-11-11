@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="320" viewBox="0 0 320 320" fill="none">
+ <defs>
+  <linearGradient id="chrome" x1="0" y1="0" x2="32" y2="40" gradientUnits="userSpaceOnUse" spreadMethod="reflect">
+   <stop stop-color="#15182d"/><stop offset=".12" stop-color="#9da9ca"/><stop offset=".24" stop-color="#fff7ff"/><stop offset=".31" stop-color="#c7c4e7"/><stop offset=".45" stop-color="#3d3b5d"/><stop offset=".49" stop-color="#141a33"/><stop offset=".54" stop-color="#e8faff"/><stop offset=".67" stop-color="#8f94bd"/><stop offset=".79" stop-color="#e0b9e4"/><stop offset=".87" stop-color="#fff9fe"/><stop offset="1" stop-color="#46435d"/>
+  </linearGradient>
+  <linearGradient id="rail" x1="0" y1="0" x2="0" y2="28" gradientUnits="userSpaceOnUse">
+   <stop stop-color="#1a1a32"/><stop offset=".18" stop-color="#bec6e2"/><stop offset=".26" stop-color="#fff4ff"/><stop offset=".36" stop-color="#b3b3d3"/><stop offset=".49" stop-color="#282b49"/><stop offset=".54" stop-color="#eefbff"/><stop offset=".68" stop-color="#8b7eac"/><stop offset=".81" stop-color="#f3cdef"/><stop offset=".9" stop-color="#fff8ff"/><stop offset="1" stop-color="#424666"/>
+  </linearGradient>
+  <g id="edge">
+   <path d="M64 7H256M64 22H256" stroke="#111427" stroke-width="5"/>
+   <path d="M64 7H256" stroke="url(#rail)" stroke-width="11"/>
+   <path d="M64 20C105 20 107 12 160 12S215 20 256 20" stroke="url(#rail)" stroke-width="6"/>
+   <path d="M64 5H256M64 18C105 18 107 10 160 10S215 18 256 18" stroke="#fff6ff" stroke-width="1.1" opacity=".9"/>
+   <path d="M64 25H256" stroke="#9ba6cd" stroke-width=".8"/>
+  </g>
+  <g id="corner" stroke-linecap="round" stroke-linejoin="round">
+   <path d="M64 7H29C13 7 7 14 7 30V64" stroke="#080b19" stroke-width="17"/>
+   <path d="M64 7H29C13 7 7 14 7 30V64" stroke="url(#chrome)" stroke-width="12"/>
+   <path d="M64 4H29C11 4 4 12 4 30V64" stroke="#f5f0ff" stroke-width="1.2"/>
+   <path d="M64 20C39 20 29 24 23 37C20 44 18 56 20 64" stroke="url(#chrome)" stroke-width="6"/>
+   <path d="M20 64C20 39 24 29 37 23C44 20 56 18 64 20" stroke="url(#chrome)" stroke-width="6"/>
+   <path d="M9 51C20 38 32 38 42 34C54 29 55 19 57 6C49 16 37 13 28 24C20 34 20 43 9 51Z" fill="url(#chrome)" stroke="#15172e" stroke-width="1"/>
+   <path d="M6 57C19 55 29 54 34 42C38 32 38 20 51 9C43 20 34 20 24 28C13 37 16 49 6 57Z" fill="url(#chrome)" stroke="#14172c" stroke-width="1"/>
+   <path d="M11 49C26 33 35 35 46 27L55 9M9 55C19 40 23 29 35 23" stroke="#f4faff" stroke-width=".9"/>
+   <path d="M14 29L28 14L40 27L27 41Z" fill="url(#chrome)" stroke="#dcd3f3" stroke-width="1"/>
+   <path d="M20 28L28 20L34 28L27 35Z" fill="#171a32" stroke="#f1ddff" stroke-width="1"/>
+   <path d="M28 20L28 29L34 28M20 28L28 29L27 35" stroke="#bfcbe6" stroke-width=".8"/>
+  </g>
+ </defs>
+ <use href="#edge"/><use href="#edge" transform="rotate(90 160 160)"/><use href="#edge" transform="rotate(180 160 160)"/><use href="#edge" transform="rotate(270 160 160)"/>
+ <use href="#corner"/><use href="#corner" transform="rotate(90 160 160)"/><use href="#corner" transform="rotate(180 160 160)"/><use href="#corner" transform="rotate(270 160 160)"/>
+</svg>
