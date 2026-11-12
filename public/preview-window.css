@@ -194,7 +194,7 @@ body.pro-console #stageShell.preview-expanded {
     grid-template-rows: 80px 36px 0 minmax(0, 1fr) 16px !important;
   }
   body.pro-console.bseg-009 .topbar { padding: 5px 16px 10px !important; }
-  body.pro-console.bseg-009 .topbar::after { height: 10px !important; }
+  html body.pro-console.bseg-009 .topbar::after { height: 10px !important; }
   body.pro-console.bseg-009 .brandmark { width: 58px !important; min-width: 58px !important; height: 58px !important; }
   body.pro-console.bseg-009 .logo-main { font-size: 22px !important; line-height: 1 !important; }
   body.pro-console.bseg-009 .logo-sub { font-size: 16px !important; line-height: 1 !important; margin-top: 2px !important; }
