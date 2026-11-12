@@ -67,14 +67,14 @@ async function drag(locator,dx,dy) {
 }
 await drag(page.locator('[data-edge=se]'),-120,-65);
 assert((await shell.boundingBox()).height<docked.height-50);
-await page.getByRole('button',{name:'Reset',exact:true}).click();
+await shell.getByRole('button',{name:'Reset',exact:true}).click();
 await page.getByRole('button',{name:'Float',exact:true}).click();
 const before=await shell.boundingBox();
 await drag(page.locator('.preview-grip'),-2000,-2000);
 assert((await shell.boundingBox()).x===8);
 await drag(page.locator('[data-edge=se]'),70,50);
 assert((await shell.boundingBox()).width>before.width+50);
-await page.getByRole('button',{name:'Reset',exact:true}).click();
+await shell.getByRole('button',{name:'Reset',exact:true}).click();
 await page.locator('[data-core-fx]').first().click();
 await page.screenshot({path:'depth-results/preview-floating.png'});
 await page.getByRole('button',{name:'Fullscreen preview',exact:true}).click();
