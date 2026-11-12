@@ -199,6 +199,7 @@ function mountProConsole() {
     slot.classList.toggle('preview-slot-empty', floating);
     dock.textContent = floating ? 'Dock' : 'Float';
     dock.setAttribute('aria-pressed', String(floating));
+    grip.tabIndex = floating ? 0 : -1;
     if (floating) {
       document.body.append(shell);
       placeFloating(floatRect ?? defaultFloatRect());
@@ -286,6 +287,27 @@ function mountProConsole() {
   }
 
   grip.addEventListener('pointerdown', event => startGesture(event, 'move'));
+  grip.setAttribute('role', 'group');
+  grip.setAttribute('aria-label', 'Floating preview position and size');
+  grip.setAttribute('aria-description', 'Arrow keys move. Shift plus arrow keys resize.');
+  grip.addEventListener('keydown', event => {
+    if (event.target !== grip || !floating || fullscreen.getAttribute('aria-pressed') === 'true') return;
+    const offsets = {ArrowLeft: [-16, 0], ArrowRight: [16, 0], ArrowUp: [0, -16], ArrowDown: [0, 16]};
+    if (!Object.hasOwn(offsets, event.key)) return;
+    event.preventDefault();
+    event.stopPropagation();
+    const [dx, dy] = offsets[event.key];
+    const rect = {...floatRect};
+    if (event.shiftKey) {
+      const bounds = previewBounds();
+      rect.width = Math.min(bounds.right - rect.left, rect.width + dx);
+      rect.height = Math.min(bounds.bottom - rect.top, rect.height + dy);
+    } else {
+      rect.left += dx;
+      rect.top += dy;
+    }
+    placeFloating(rect);
+  });
   for (const direction of ['n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw']) {
     const handle = document.createElement('span');
     handle.className = 'preview-resize';

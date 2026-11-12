@@ -105,6 +105,7 @@ body.pro-console #stageShell.preview-floating {
 
 .preview-floating .preview-grip { cursor: grab; touch-action: none; }
 .preview-floating .preview-grip:active { cursor: grabbing; }
+.preview-floating .preview-grip:focus-visible { outline: 2px solid #e0c7ff; outline-offset: -2px; }
 .preview-slot-empty { box-shadow: inset 0 0 0 1px #4a3b5b; }
 
 body.pro-console #stageShell:fullscreen,
