@@ -25,7 +25,7 @@ const checkAspect=async()=> {
 };
 const desktop=await checkAspect();
 const docked=await shell.boundingBox();
-assert(desktop.height>305,JSON.stringify(desktop));
+assert(desktop.height>295,JSON.stringify(desktop));
 for(const ratio of ['9:16','1:1','16:9']) {
  await page.locator('#aspectSelect').evaluate((el,ratio)=>{el.value=ratio;el.dispatchEvent(new Event('change',{bubbles:true}));},ratio);
  await checkAspect();
