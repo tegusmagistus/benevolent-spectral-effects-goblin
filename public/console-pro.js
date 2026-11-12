@@ -158,8 +158,8 @@ function mountProConsole() {
     const visible = window.visualViewport;
     const left = (visible?.offsetLeft ?? 0) + 8;
     const top = (visible?.offsetTop ?? 0) + 8;
-    return {left, top, right: left + (visible?.width ?? innerWidth) - 16,
-      bottom: top + (visible?.height ?? innerHeight) - 16};
+    return {left, top, right: left + Math.min(innerWidth, visible?.width ?? innerWidth) - 16,
+      bottom: top + Math.min(innerHeight, visible?.height ?? innerHeight) - 16};
   }
 
   const clamp = (value, min, max) => Math.max(min, Math.min(value, max));
@@ -223,6 +223,7 @@ function mountProConsole() {
     reset.disabled = active;
     fullscreen.setAttribute('aria-pressed', String(active));
     fullscreen.setAttribute('aria-label', active ? 'Exit fullscreen preview' : 'Fullscreen preview');
+    if (!active) keepPreviewVisible();
   }
 
   async function togglePreviewFullscreen() {

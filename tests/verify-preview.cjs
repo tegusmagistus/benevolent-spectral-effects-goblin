@@ -60,8 +60,12 @@ await page.getByRole('button',{name:'Fullscreen preview',exact:true}).click();
 await page.waitForFunction(()=>document.fullscreenElement || document.querySelector('.preview-expanded'));
 assert((await shell.boundingBox()).width>=1439);
 await page.getByRole('button',{name:'Exit fullscreen preview',exact:true}).click();
+await page.getByRole('button',{name:'Fullscreen preview',exact:true}).waitFor();
 await page.setViewportSize({width:390,height:844});
-await page.waitForTimeout(150);
+await page.waitForFunction(()=>{
+ const box=document.querySelector('.preview-floating').getBoundingClientRect();
+ return box.x>=7&&box.right<=391&&box.y>=7&&box.bottom<=845;
+});
 const floated=await shell.boundingBox();
 assert(floated.x>=7&&floated.x+floated.width<=391);
 await page.getByRole('button',{name:'Dock',exact:true}).click();
