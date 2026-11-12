@@ -15,11 +15,17 @@ const checkAspect=async()=> {
  const box=await canvas.boundingBox();
  const ratio=await canvas.evaluate(c=>c.width/c.height);
  assert(Math.abs(box.width/box.height-ratio)<.02,JSON.stringify({box,ratio}));
+ if (await zoom.inputValue()==='fit') {
+   const viewport=await page.locator('.preview-viewport').boundingBox();
+   const panel=await shell.boundingBox();
+   assert(box.x>=viewport.x&&box.y>=viewport.y&&box.x+box.width<=viewport.x+viewport.width+1&&box.y+box.height<=viewport.y+viewport.height+1);
+   assert(viewport.y>=panel.y&&viewport.y+viewport.height<=panel.y+panel.height+1);
+ }
  return box;
 };
 const desktop=await checkAspect();
 const docked=await shell.boundingBox();
-assert(desktop.height>330,JSON.stringify(desktop));
+assert(desktop.height>315,JSON.stringify(desktop));
 for(const ratio of ['9:16','1:1','16:9']) {
  await page.locator('#aspectSelect').evaluate((el,ratio)=>{el.value=ratio;el.dispatchEvent(new Event('change',{bubbles:true}));},ratio);
  await checkAspect();

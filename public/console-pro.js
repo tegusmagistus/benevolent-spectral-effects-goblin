@@ -121,7 +121,7 @@ function mountProConsole() {
   const toolbar = document.createElement('div');
   toolbar.className = 'preview-toolbar';
   toolbar.innerHTML = `
-    <span class="preview-grip" title="Drag the floating preview">⠿ <span>Preview</span></span>
+    <div class="preview-grip" title="Drag the floating preview"><span aria-hidden="true">⠿</span></div>
     <select aria-label="Preview zoom" title="100% displays one canvas pixel per CSS pixel">
       <option value="fit">Fit</option><option value="0.5">50%</option>
       <option value="1">100%</option><option value="1.5">150%</option><option value="2">200%</option>
@@ -135,6 +135,9 @@ function mountProConsole() {
   const reset = toolbar.querySelector('[data-preview="reset"]');
   const fullscreen = toolbar.querySelector('[data-preview="fullscreen"]');
   const grip = toolbar.querySelector('.preview-grip');
+  const stageTop = center.querySelector('.stage-top');
+  grip.append(...stageTop.children);
+  stageTop.remove();
   let floating = false;
   let floatRect;
   let dockRect;
