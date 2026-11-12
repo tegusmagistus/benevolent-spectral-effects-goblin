@@ -24,8 +24,26 @@ const checkAspect=async()=> {
  return box;
 };
 const desktop=await checkAspect();
-const docked=await shell.boundingBox();
+let docked=await shell.boundingBox();
 assert(desktop.height>295,JSON.stringify(desktop));
+const laptopLayouts=[];
+for (const viewport of [{width:1366,height:650},{width:1440,height:700},{width:1280,height:720}]) {
+ await page.setViewportSize(viewport);
+ const video=await checkAspect();
+ assert(video.height>=220,JSON.stringify({viewport,video}));
+ const controls=await page.locator('.pro-quick-tune').boundingBox();
+ const timeline=await page.locator('.timeline').boundingBox();
+ assert(controls.y>=video.y+video.height && timeline.y+timeline.height<=viewport.height);
+ await page.locator('[data-core-fx]').first().click();
+ await page.getByLabel('Selected effect mix percent').fill('65');
+ await page.getByLabel('Selected effect mix percent').press('Enter');
+ assert.equal(await page.getByLabel('Selected effect mix').inputValue(),'0.65');
+ laptopLayouts.push({viewport,video,controls,timeline});
+ await page.screenshot({path:`depth-results/preview-laptop-${viewport.width}x${viewport.height}.png`});
+}
+await page.setViewportSize({width:1440,height:900});
+await checkAspect();
+docked=await shell.boundingBox();
 for(const ratio of ['9:16','1:1','16:9']) {
  await page.locator('#aspectSelect').evaluate((el,ratio)=>{el.value=ratio;el.dispatchEvent(new Event('change',{bubbles:true}));},ratio);
  await checkAspect();
@@ -73,6 +91,6 @@ const mobile=await checkAspect();
 assert(mobile.height>180);
 assert.deepEqual(errors,[]);
 await page.screenshot({path:'depth-results/preview-mobile.png'});
-console.log({desktop,mobile,floated,errors});
+console.log({desktop,laptopLayouts,mobile,floated,errors});
 }finally{await browser.close();}
 })().catch(e=>{console.error(e);process.exitCode=1;});

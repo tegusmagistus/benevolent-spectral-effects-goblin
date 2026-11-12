@@ -172,6 +172,39 @@ body.pro-console #stageShell.preview-expanded {
   body.pro-console #stageShell .monitor-rail { display: none; }
   body.pro-console .transport { height: 38px !important; }
 }
+/* Give the picture the remaining height, with a single compact editing shelf. */
+@media (min-width: 1001px) {
+  body.pro-console #app .center {
+    grid-template-columns: minmax(0, 1fr) minmax(190px, 34%);
+    grid-template-rows: minmax(0, 1fr) 38px 64px !important;
+  }
+  body.pro-console .center > .preview-slot,
+  body.pro-console .center > .transport { grid-column: 1 / -1; }
+  body.pro-console .center > .pro-quick { grid-column: 1; grid-row: 3; padding: 4px 8px; }
+  body.pro-console .center > .pro-quick-tune {
+    grid-column: 2; grid-row: 3; padding: 5px 8px;
+    min-width: 0; border-left: 1px solid #635674;
+  }
+  body.pro-console #proActiveName { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  body.pro-console .pro-core-scroll { overflow-x: auto; scrollbar-width: thin; }
+}
+/* Laptop browser chrome leaves less height than a desktop display. */
+@media (min-width: 1001px) and (max-height: 800px) {
+  body.pro-console.bseg-009 #app {
+    grid-template-rows: 88px 40px 0 minmax(0, 1fr) 18px !important;
+  }
+  body.pro-console.bseg-009 .topbar { padding: 5px 16px 10px !important; }
+  body.pro-console.bseg-009 .brandmark { width: 70px !important; min-width: 70px !important; height: 70px !important; }
+  body.pro-console.bseg-009 .logo-main { font-size: 28px !important; }
+  body.pro-console.bseg-009 .logo-sub { font-size: 22px !important; margin-top: 2px !important; }
+  body.pro-console.bseg-009 .brand-credit { font-size: 8px !important; margin-top: 4px !important; }
+  body.pro-console.bseg-009 .guardian-portrait { height: 78px !important; }
+  body.pro-console.bseg-009 .guardian-portrait img { height: 92px !important; }
+  body.pro-console .system-bus { visibility: hidden; overflow: hidden; height: 0 !important; padding: 0 !important; border: 0 !important; }
+  body.pro-console .workspace { grid-template-rows: minmax(0, 1fr) 96px !important; }
+  body.pro-console .footer-note { height: 18px !important; padding: 2px !important; }
+  body.pro-console .timelinehead { padding: 2px 6px !important; }
+}
 @media (max-width: 1000px) {
   body.pro-console #app .center { grid-template-rows: minmax(0, 1fr) 36px 56px 52px !important; }
   .preview-grip .pro-render-badge { display: none; }
