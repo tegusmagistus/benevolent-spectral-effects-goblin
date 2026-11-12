@@ -191,19 +191,28 @@ body.pro-console #stageShell.preview-expanded {
 /* Laptop browser chrome leaves less height than a desktop display. */
 @media (min-width: 1001px) and (max-height: 800px) {
   body.pro-console.bseg-009 #app {
-    grid-template-rows: 88px 40px 0 minmax(0, 1fr) 18px !important;
+    grid-template-rows: 80px 36px 0 minmax(0, 1fr) 16px !important;
   }
   body.pro-console.bseg-009 .topbar { padding: 5px 16px 10px !important; }
   body.pro-console.bseg-009 .brandmark { width: 70px !important; min-width: 70px !important; height: 70px !important; }
-  body.pro-console.bseg-009 .logo-main { font-size: 28px !important; }
-  body.pro-console.bseg-009 .logo-sub { font-size: 22px !important; margin-top: 2px !important; }
-  body.pro-console.bseg-009 .brand-credit { font-size: 8px !important; margin-top: 4px !important; }
+  body.pro-console.bseg-009 .logo-main { font-size: 24px !important; line-height: 1 !important; }
+  body.pro-console.bseg-009 .logo-sub { font-size: 18px !important; line-height: 1 !important; margin-top: 2px !important; }
+  body.pro-console.bseg-009 .brand-credit { font-size: 8px !important; line-height: 10px !important; margin-top: 3px !important; }
   body.pro-console.bseg-009 .guardian-portrait { height: 78px !important; }
   body.pro-console.bseg-009 .guardian-portrait img { height: 92px !important; }
   body.pro-console .system-bus { visibility: hidden; overflow: hidden; height: 0 !important; padding: 0 !important; border: 0 !important; }
-  body.pro-console .workspace { grid-template-rows: minmax(0, 1fr) 96px !important; }
-  body.pro-console .footer-note { height: 18px !important; padding: 2px !important; }
-  body.pro-console .timelinehead { padding: 2px 6px !important; }
+  body.pro-console .workspace { grid-template-rows: minmax(0, 1fr) 84px !important; }
+  body.pro-console .footer-note { height: 16px !important; padding: 1px !important; }
+  body.pro-console .timelinehead { padding: 0 6px !important; }
+  body.pro-console .timelinehead .little { min-height: 24px; padding: 3px 7px !important; font-size: 9px !important; }
+  body.pro-console .timeline-ruler { margin-top: 1px !important; margin-bottom: 1px !important; }
+  body.pro-console #app .center { grid-template-rows: minmax(0, 1fr) 34px 52px !important; }
+  body.pro-console .transport { height: 34px !important; }
+  body.pro-console .center > .pro-quick { padding: 2px 8px; }
+  body.pro-console .pro-quick-head { height: 13px; margin-bottom: 2px; }
+  body.pro-console .pro-core-scroll button { min-height: 30px; }
+  body.pro-console .center > .pro-quick-tune { padding: 2px 8px; }
+  body.pro-console .pro-active-line { height: 18px; }
 }
 @media (max-width: 1000px) {
   body.pro-console #app .center { grid-template-rows: minmax(0, 1fr) 36px 56px 52px !important; }

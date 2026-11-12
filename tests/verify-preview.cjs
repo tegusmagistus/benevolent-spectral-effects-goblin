@@ -40,7 +40,7 @@ for (const viewport of [{width:1366,height:650},{width:1440,height:700},{width:1
  await page.locator('[data-core-fx]').first().click();
  await page.getByLabel('Selected effect mix percent').fill('65');
  await page.getByLabel('Selected effect mix percent').press('Enter');
- assert.equal(await page.getByLabel('Selected effect mix').inputValue(),'0.65');
+ assert.equal(await page.getByLabel('Selected effect mix',{exact:true}).inputValue(),'0.65');
  laptopLayouts.push({viewport,video,controls,timeline});
  await page.screenshot({path:`depth-results/preview-laptop-${viewport.width}x${viewport.height}.png`});
 }
