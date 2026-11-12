@@ -1,0 +1,68 @@
+const {chromium} = require('playwright-core');
+const assert = require('node:assert/strict');
+(async () => {
+const browser = await chromium.launch({executablePath: ['/usr/bin/google-chrome', '/usr/bin/chromium'].find(require('node:fs').existsSync),args:['--no-sandbox','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
+try {
+const page = await browser.newPage({viewport:{width:1440,height:900}});
+const errors=[];
+require('node:fs').mkdirSync('depth-results',{recursive:true});
+page.on('pageerror',e=>errors.push(e.message));
+await page.goto('http://localhost:8765/public/');
+await page.waitForSelector('.preview-toolbar');
+const shell=page.locator('#stageShell'),canvas=page.locator('#stage'), zoom=page.getByLabel('Preview zoom');
+const checkAspect=async()=> {
+ await page.waitForTimeout(100);
+ const box=await canvas.boundingBox();
+ const ratio=await canvas.evaluate(c=>c.width/c.height);
+ assert(Math.abs(box.width/box.height-ratio)<.02,JSON.stringify({box,ratio}));
+ return box;
+};
+const desktop=await checkAspect();
+const docked=await shell.boundingBox();
+assert(desktop.height>330,JSON.stringify(desktop));
+for(const ratio of ['9:16','1:1','16:9']) {
+ await page.locator('#aspectSelect').evaluate((el,ratio)=>{el.value=ratio;el.dispatchEvent(new Event('change',{bubbles:true}));},ratio);
+ await checkAspect();
+}
+for(const scale of ['0.5','1','1.5','2']) {
+ await zoom.selectOption(scale);
+ const box=await checkAspect();
+ assert(Math.abs(box.width-(await canvas.evaluate(c=>c.width))*Number(scale))<2);
+}
+await zoom.selectOption('fit');
+await page.screenshot({path:'depth-results/preview-desktop.png'});
+async function drag(locator,dx,dy) {
+ const b=await locator.boundingBox();
+ await page.mouse.move(b.x+b.width/2,b.y+b.height/2);
+ await page.mouse.down();
+ await page.mouse.move(b.x+b.width/2+dx,b.y+b.height/2+dy,{steps:4});
+ await page.mouse.up();
+}
+await drag(page.locator('[data-edge=se]'),-120,-65);
+assert((await shell.boundingBox()).height<docked.height-50);
+await page.getByRole('button',{name:'Reset',exact:true}).click();
+await page.getByRole('button',{name:'Float',exact:true}).click();
+const before=await shell.boundingBox();
+await drag(page.locator('.preview-grip'),-2000,-2000);
+assert((await shell.boundingBox()).x===8);
+await drag(page.locator('[data-edge=se]'),70,50);
+assert((await shell.boundingBox()).width>before.width+50);
+await page.getByRole('button',{name:'Reset',exact:true}).click();
+await page.locator('[data-core-fx]').first().click();
+await page.screenshot({path:'depth-results/preview-floating.png'});
+await page.getByRole('button',{name:'Fullscreen preview',exact:true}).click();
+await page.waitForFunction(()=>document.fullscreenElement || document.querySelector('.preview-expanded'));
+assert((await shell.boundingBox()).width>=1439);
+await page.getByRole('button',{name:'Exit fullscreen preview',exact:true}).click();
+await page.setViewportSize({width:390,height:844});
+await page.waitForTimeout(150);
+const floated=await shell.boundingBox();
+assert(floated.x>=7&&floated.x+floated.width<=391);
+await page.getByRole('button',{name:'Dock',exact:true}).click();
+const mobile=await checkAspect();
+assert(mobile.height>180);
+assert.deepEqual(errors,[]);
+await page.screenshot({path:'depth-results/preview-mobile.png'});
+console.log({desktop,mobile,floated,errors});
+}finally{await browser.close();}
+})().catch(e=>{console.error(e);process.exitCode=1;});

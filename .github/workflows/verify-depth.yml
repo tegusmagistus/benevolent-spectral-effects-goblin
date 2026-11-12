@@ -1,9 +1,13 @@
 name: Verify Depth Lab effects
 on:
   push:
-    branches: [feature/depth-lab-012, main]
+    branches: [feature/depth-lab-012, feature/resizable-preview, main]
     paths:
       - 'public/deep-*'
+      - 'public/preview-window.css'
+      - 'public/console-pro.js'
+      - 'refine-header.mjs'
+      - 'tests/verify-preview.cjs'
       - 'deep-build.mjs'
       - 'tests/*depth.cjs'
       - '.github/workflows/verify-depth.yml'
@@ -28,6 +32,11 @@ jobs:
           if ! command -v ffmpeg >/dev/null; then sudo apt-get update -qq && sudo apt-get install -y ffmpeg; fi
       - name: Generate video fixture
         run: ffmpeg -loglevel error -f lavfi -i testsrc2=size=320x180:rate=15 -f lavfi -i sine=frequency=440:sample_rate=44100 -t 2 -c:v libx264 -pix_fmt yuv420p -c:a aac -y tests/motion.mp4
+      - name: Preview window interaction and layout
+        run: |
+          python3 -m http.server 8765 &
+          curl --retry 4 --retry-connrefused --fail http://localhost:8765/public/ -o /dev/null
+          node tests/verify-preview.cjs
       - name: Browser, shader, controls and export verification
         run: node tests/verify-depth.cjs
       - name: Verify live public site after production update

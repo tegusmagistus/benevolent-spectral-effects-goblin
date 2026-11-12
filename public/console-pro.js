@@ -104,10 +104,211 @@ function mountProConsole() {
     quick.querySelectorAll('[data-core-fx]').forEach(b=>{b.setAttribute('aria-pressed',String(fx?.id===b.dataset.coreFx));b.classList.toggle('in-chain',activeChain().some(f=>f.id===b.dataset.coreFx));});
     if(state.layers.every(l=>l.type==='demo')){for(const l of state.layers)if(l.name==='Moon + stardust')l.name='Guardian reference';$('activeLayerName').textContent='Guardian reference';}
   }
-  // The preview is fitted into its allocated area. Portrait media never pushes core effects off-screen.
-  function fitPreview(){const shell=$('stageShell'),unit=shell.querySelector('.monitor-unit'),screen=shell.querySelector('.stage-background');if(!unit||!screen)return;const css=getComputedStyle(shell),u=getComputedStyle(unit),n=v=>parseFloat(v)||0,rail=unit.querySelector('.monitor-rail');const w=Math.max(50,shell.clientWidth-n(css.paddingLeft)-n(css.paddingRight)-n(u.paddingLeft)-n(u.paddingRight)-n(u.borderLeftWidth)-n(u.borderRightWidth)),h=Math.max(35,shell.clientHeight-n(css.paddingTop)-n(css.paddingBottom)-n(u.paddingTop)-n(u.paddingBottom)-n(u.borderTopWidth)-n(u.borderBottomWidth)-(rail?.getBoundingClientRect().height||0)),ratio=stage.width/stage.height;screen.style.width=`${Math.min(w,h*ratio)}px`;screen.style.height=`${Math.min(h,w/ratio)}px`;screen.style.maxWidth='100%';}
-  new ResizeObserver(fitPreview).observe($('stageShell'));
-  new MutationObserver(fitPreview).observe(stage,{attributes:true,attributeFilter:['width','height']});
+  const shell = $('stageShell');
+  const unit = shell.querySelector('.monitor-unit');
+  const screen = shell.querySelector('.stage-background');
+  const slot = document.createElement('div');
+  slot.className = 'preview-slot';
+  shell.before(slot);
+  slot.append(shell);
+  const viewport = document.createElement('div');
+  viewport.className = 'preview-viewport';
+  viewport.tabIndex = 0;
+  viewport.setAttribute('aria-label', 'Preview viewport. Scroll to pan when zoomed in.');
+  screen.before(viewport);
+  viewport.append(screen);
+
+  const toolbar = document.createElement('div');
+  toolbar.className = 'preview-toolbar';
+  toolbar.innerHTML = `
+    <span class="preview-grip" title="Drag the floating preview">⠿ <span>Preview</span></span>
+    <select aria-label="Preview zoom" title="100% displays one canvas pixel per CSS pixel">
+      <option value="fit">Fit</option><option value="0.5">50%</option>
+      <option value="1">100%</option><option value="1.5">150%</option><option value="2">200%</option>
+    </select>
+    <button type="button" data-preview="dock" aria-pressed="false">Float</button>
+    <button type="button" data-preview="reset" title="Reset preview size and position">Reset</button>
+    <button type="button" data-preview="fullscreen" aria-label="Fullscreen preview" aria-pressed="false" title="Fullscreen preview">⤢</button>`;
+  unit.before(toolbar);
+  const zoom = toolbar.querySelector('select');
+  const dock = toolbar.querySelector('[data-preview="dock"]');
+  const reset = toolbar.querySelector('[data-preview="reset"]');
+  const fullscreen = toolbar.querySelector('[data-preview="fullscreen"]');
+  const grip = toolbar.querySelector('.preview-grip');
+  let floating = false;
+  let floatRect;
+  let dockRect;
+  let gesture;
+
+  function fitPreview() {
+    const scale = zoom.value === 'fit'
+      ? Math.min((viewport.clientWidth - 2) / stage.width, (viewport.clientHeight - 2) / stage.height)
+      : Number(zoom.value);
+    const width = Math.max(1, stage.width * scale);
+    const height = Math.max(1, stage.height * scale);
+    screen.style.width = width + 2 + 'px';
+    screen.style.height = height + 2 + 'px';
+    viewport.classList.toggle('preview-fit', zoom.value === 'fit');
+  }
+
+  function previewBounds() {
+    const visible = window.visualViewport;
+    const left = (visible?.offsetLeft ?? 0) + 8;
+    const top = (visible?.offsetTop ?? 0) + 8;
+    return {left, top, right: left + (visible?.width ?? innerWidth) - 16,
+      bottom: top + (visible?.height ?? innerHeight) - 16};
+  }
+
+  const clamp = (value, min, max) => Math.max(min, Math.min(value, max));
+
+  function placeFloating(rect) {
+    const bounds = previewBounds();
+    const maxWidth = bounds.right - bounds.left;
+    const maxHeight = bounds.bottom - bounds.top;
+    const width = clamp(rect.width, Math.min(250, maxWidth), maxWidth);
+    const height = clamp(rect.height, Math.min(145, maxHeight), maxHeight);
+    floatRect = {width, height,
+      left: clamp(rect.left, bounds.left, bounds.right - width),
+      top: clamp(rect.top, bounds.top, bounds.bottom - height)};
+    for (const [property, value] of Object.entries(floatRect)) shell.style[property] = value + 'px';
+  }
+
+  function defaultFloatRect() {
+    const rect = slot.getBoundingClientRect();
+    const bounds = previewBounds();
+    const width = Math.min(rect.width, (bounds.right - bounds.left) * .84);
+    const height = Math.min(rect.height, (bounds.bottom - bounds.top) * .49);
+    return {left: rect.left + (rect.width - width) / 2, top: rect.top, width, height};
+  }
+
+  function sizeDocked() {
+    const width = dockRect && Math.min(dockRect.width, slot.clientWidth);
+    const height = dockRect && Math.min(dockRect.height, slot.clientHeight);
+    shell.style.left = dockRect ? Math.min(dockRect.left, slot.clientWidth - width) + 'px' : '';
+    shell.style.top = dockRect ? Math.min(dockRect.top, slot.clientHeight - height) + 'px' : '';
+    shell.style.width = dockRect ? width + 'px' : '';
+    shell.style.height = dockRect ? height + 'px' : '';
+  }
+
+  dock.addEventListener('click', () => {
+    floating = !floating;
+    shell.classList.toggle('preview-floating', floating);
+    slot.classList.toggle('preview-slot-empty', floating);
+    dock.textContent = floating ? 'Dock' : 'Float';
+    dock.setAttribute('aria-pressed', String(floating));
+    if (floating) {
+      document.body.append(shell);
+      placeFloating(floatRect ?? defaultFloatRect());
+    } else {
+      slot.append(shell);
+      sizeDocked();
+    }
+    dock.focus({preventScroll: true});
+  });
+
+  reset.addEventListener('click', () => {
+    if (floating) placeFloating(defaultFloatRect());
+    else {
+      dockRect = undefined;
+      sizeDocked();
+    }
+  });
+
+  function updateFullscreen() {
+    const active = document.fullscreenElement === shell || shell.classList.contains('preview-expanded');
+    dock.disabled = active;
+    reset.disabled = active;
+    fullscreen.setAttribute('aria-pressed', String(active));
+    fullscreen.setAttribute('aria-label', active ? 'Exit fullscreen preview' : 'Fullscreen preview');
+  }
+
+  async function togglePreviewFullscreen() {
+    if (document.fullscreenElement === shell) await document.exitFullscreen();
+    else if (shell.classList.contains('preview-expanded')) shell.classList.remove('preview-expanded');
+    else {
+      try {
+        if (!shell.requestFullscreen) throw Error('Fullscreen API unavailable');
+        await shell.requestFullscreen();
+      } catch {
+        shell.classList.add('preview-expanded');
+      }
+    }
+    updateFullscreen();
+  }
+
+  fullscreen.addEventListener('click', togglePreviewFullscreen);
+  $('fullscreenStage').onclick = togglePreviewFullscreen;
+  document.addEventListener('fullscreenchange', updateFullscreen);
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && shell.classList.contains('preview-expanded')) {
+      shell.classList.remove('preview-expanded');
+      updateFullscreen();
+      fullscreen.focus();
+    }
+  });
+
+  function startGesture(event, direction) {
+    if (gesture || event.button !== 0 || (!floating && direction === 'move') ||
+        fullscreen.getAttribute('aria-pressed') === 'true') return;
+    const rect = shell.getBoundingClientRect();
+    const bounds = floating ? previewBounds() : slot.getBoundingClientRect();
+    gesture = {direction, bounds, rect, x: event.clientX, y: event.clientY, pointer: event.pointerId};
+    event.currentTarget.setPointerCapture(event.pointerId);
+    event.preventDefault();
+  }
+
+  function moveGesture(event) {
+    if (!gesture || event.pointerId !== gesture.pointer) return;
+    const {direction, bounds, rect, x, y} = gesture;
+    const dx = event.clientX - x;
+    const dy = event.clientY - y;
+    if (direction === 'move') {
+      placeFloating({left: rect.left + dx, top: rect.top + dy, width: rect.width, height: rect.height});
+      return;
+    }
+    const minWidth = Math.min(250, bounds.right - bounds.left);
+    const minHeight = Math.min(145, bounds.bottom - bounds.top);
+    const left = direction.includes('w') ? clamp(rect.left + dx, bounds.left, rect.right - minWidth) : rect.left;
+    const right = direction.includes('e') ? clamp(rect.right + dx, rect.left + minWidth, bounds.right) : rect.right;
+    const top = direction.includes('n') ? clamp(rect.top + dy, bounds.top, rect.bottom - minHeight) : rect.top;
+    const bottom = direction.includes('s') ? clamp(rect.bottom + dy, rect.top + minHeight, bounds.bottom) : rect.bottom;
+    const width = right - left;
+    const height = bottom - top;
+    if (floating) placeFloating({left, top, width, height});
+    else {
+      dockRect = {left: left - bounds.left, top: top - bounds.top, width, height};
+      sizeDocked();
+    }
+  }
+
+  grip.addEventListener('pointerdown', event => startGesture(event, 'move'));
+  for (const direction of ['n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw']) {
+    const handle = document.createElement('span');
+    handle.className = 'preview-resize';
+    handle.dataset.edge = direction;
+    handle.setAttribute('aria-hidden', 'true');
+    handle.addEventListener('pointerdown', event => startGesture(event, direction));
+    shell.append(handle);
+  }
+  shell.addEventListener('pointermove', moveGesture);
+  shell.addEventListener('lostpointercapture', event => {
+    if (gesture?.pointer === event.pointerId) gesture = undefined;
+  });
+
+  zoom.addEventListener('change', () => {
+    fitPreview();
+    viewport.scrollTo((viewport.scrollWidth - viewport.clientWidth) / 2,
+      (viewport.scrollHeight - viewport.clientHeight) / 2);
+  });
+  new ResizeObserver(fitPreview).observe(viewport);
+  new ResizeObserver(() => { if (!floating) sizeDocked(); }).observe(slot);
+  new MutationObserver(fitPreview).observe(stage, {attributes: true, attributeFilter: ['width', 'height']});
+  function keepPreviewVisible() {
+    if (floating) placeFloating(floatRect);
+  }
+  window.addEventListener('resize', keepPreviewVisible);
+  window.visualViewport?.addEventListener('resize', keepPreviewVisible);
+  window.visualViewport?.addEventListener('scroll', keepPreviewVisible);
   document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.body.classList.remove('pro-tools-open');toolsButton.setAttribute('aria-expanded','false');}});
   document.addEventListener('click',e=>{if(!mobile.matches&&document.body.classList.contains('pro-tools-open')&&!tools.contains(e.target)&&e.target!==toolsButton)document.body.classList.remove('pro-tools-open');});
   syncPro();numericControls();fitPreview();
