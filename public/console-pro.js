@@ -101,7 +101,7 @@ function mountProConsole() {
   new MutationObserver(syncFilterLabel).observe(categories,{attributes:true,attributeFilter:['class'],childList:true,subtree:true});
   syncFilterLabel();
 
-  const help=make('div',{class:'pro-capability-note',role:'status'},'WebGL2 is unavailable in this browser. The five Tibetan-inspired processors still work; other processors need WebGL2.');
+  const help=make('div',{class:'pro-capability-note',role:'status'},'WebGL2 is unavailable in this browser. The Tibetan-inspired processors still work; other processors need WebGL2.');
   help.hidden=!!renderer.gl;library.insertBefore(help,$('effectsLibrary'));
 
   // Number entry is paired with each existing slider, not an extra cosmetic control.

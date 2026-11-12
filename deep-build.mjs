@@ -21,3 +21,5 @@ const moduleStart=h.indexOf('<script type="module">'),moduleEnd=h.indexOf('</scr
 h=h.slice(0,moduleEnd)+'\n'+start+'\n'+read('deep-controls.js')+'\n'+read('deep-ergonomics.js')+'\n'+end+'\n'+h.slice(moduleEnd);
 for(const m of h.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g))if(m[1].trim())new Function(m[1]);
 writeFileSync(file,h);console.log('BSEG Depth Lab 012 applied.');
+
+await import('./vertigo-build.mjs');

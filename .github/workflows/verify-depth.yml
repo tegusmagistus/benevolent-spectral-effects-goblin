@@ -1,7 +1,7 @@
 name: Verify Depth Lab effects
 on:
   push:
-    branches: [feature/depth-lab-012, feature/resizable-preview, feature/laptop-preview, feature/mobile-effects, main]
+    branches: [feature/depth-lab-012, feature/resizable-preview, feature/laptop-preview, feature/mobile-effects, feature/vertigo-flow, main]
     paths:
       - 'public/deep-*'
       - 'public/preview-window.css'
@@ -10,6 +10,9 @@ on:
       - 'tests/verify-preview.cjs'
       - 'tests/verify-mobile-effects.cjs'
       - 'deep-build.mjs'
+      - 'vertigo-build.mjs'
+      - 'public/vertigo-flow.js'
+      - 'tests/verify-vertigo.cjs'
       - 'tests/*depth.cjs'
       - '.github/workflows/verify-depth.yml'
 permissions:
@@ -17,7 +20,7 @@ permissions:
 jobs:
   verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -39,6 +42,7 @@ jobs:
           curl --retry 4 --retry-connrefused --fail http://localhost:8765/public/ -o /dev/null
           node tests/verify-preview.cjs
           node tests/verify-mobile-effects.cjs
+          node tests/verify-vertigo.cjs
       - name: Browser, shader, controls and export verification
         run: node tests/verify-depth.cjs
       - name: Verify live public site after production update
