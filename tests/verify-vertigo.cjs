@@ -24,7 +24,7 @@ try {
   f.speed=0;t.renderFrame(0);const frozen=pixels();t.renderFrame(5);const freeze=diff(frozen,pixels());f.speed=.35;
   f.amount=0;t.renderFrame(0);const zero=diff(original,pixels());f.amount=1;f.enabled=false;t.renderFrame(0);const bypass=diff(original,pixels());f.enabled=true;
   const saved=JSON.stringify(f);Object.assign(f,JSON.parse(saved));const roundTrip=JSON.stringify(f)===saved;
-  t.addEffect('crystalglass');t.renderFrame(.75);const orderA=pixels();s.effects.reverse();t.renderFrame(.75);const order=diff(orderA,pixels());s.effects=[f];t.renderFrame(1.25);
+  t.addEffect('crystalglass');t.renderFrame(.75);const orderA=pixels();s.effects.reverse();t.renderFrame(.75);const order=diff(orderA,pixels());s.effects=[f];t.setScope('master');t.renderFrame(1.25);
   return {active:diff(active,original),stable,motion,controls,freeze,zero,bypass,roundTrip,order,error:gl.getError()};
  });
  const r=report.render;assert(r.active>1&&r.motion>.1&&r.stable===0&&r.freeze===0&&r.zero===0&&r.bypass===0&&r.roundTrip&&r.order>.1&&r.error===0,JSON.stringify(r));assert(Object.values(r.controls).every(v=>v>.05),JSON.stringify(r.controls));
