@@ -11,14 +11,15 @@ await page.goto('http://localhost:8765/public/');
 await page.waitForSelector('.preview-toolbar');
 const shell=page.locator('#stageShell'),canvas=page.locator('#stage'), zoom=page.getByLabel('Preview zoom');
 const checkAspect=async()=> {
- await page.waitForTimeout(100);
+ await page.waitForTimeout(700);
  const box=await canvas.boundingBox();
  const ratio=await canvas.evaluate(c=>c.width/c.height);
  assert(Math.abs(box.width/box.height-ratio)<.02,JSON.stringify({box,ratio}));
  if (await zoom.inputValue()==='fit') {
    const viewport=await page.locator('.preview-viewport').boundingBox();
    const panel=await shell.boundingBox();
-   assert(box.x>=viewport.x&&box.y>=viewport.y&&box.x+box.width<=viewport.x+viewport.width+1&&box.y+box.height<=viewport.y+viewport.height+1);
+   await page.screenshot({path:'depth-results/preview-fit-check.png'});
+   assert(box.x>=viewport.x&&box.y>=viewport.y&&box.x+box.width<=viewport.x+viewport.width+1&&box.y+box.height<=viewport.y+viewport.height+1,JSON.stringify({box,viewport,panel}));
    assert(viewport.y>=panel.y&&viewport.y+viewport.height<=panel.y+panel.height+1);
  }
  return box;
@@ -26,6 +27,8 @@ const checkAspect=async()=> {
 const desktop=await checkAspect();
 let docked=await shell.boundingBox();
 assert(desktop.height>295,JSON.stringify(desktop));
+await page.setInputFiles('#mediaUpload',require('node:path').resolve('tests/motion.mp4'));
+await page.waitForFunction(()=>{const t=window.__VFX02_TEST__,l=t.getState().layers.find(l=>l.type==='video');return l&&t.getMedia(l.id).readyState>=2;});
 const laptopLayouts=[];
 for (const viewport of [{width:1366,height:650},{width:1440,height:700},{width:1280,height:720}]) {
  await page.setViewportSize(viewport);
