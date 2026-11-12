@@ -17,6 +17,10 @@ if(!h.includes('/* D12_PATCHED_ENGINE */')){
  once('gl.drawArrays(gl.TRIANGLES,0,6);input=output;pass++;','gl.drawArrays(gl.TRIANGLES,0,6);d12Remember(this,memory,this.textures[output]);input=output;pass++;','isolated memory');
  once('gl.bindTexture(gl.TEXTURE_2D,this.textures[input]);gl.uniform1i(u.u_mode,0);','gl.bindTexture(gl.TEXTURE_2D,this.textures[input]);gl.uniform1i(u.u_deep,0);gl.uniform1i(u.u_mode,0);','final copy');
 }
+if(!h.includes('function saveCustomRecipe(presetName,presetChain)')){
+ once("function saveCustomRecipe(){const field=$('recipeName'),name=field.value.trim();","function saveCustomRecipe(presetName,presetChain){const field=$('recipeName'),name=typeof presetName==='string'?presetName:field.value.trim();",'named memory');
+ once("const chain=activeChain();if(!chain.length){notify('Add an effect first.');","const chain=presetChain??activeChain();if(!chain.length){notify('Add an effect first.');",'memory scope');
+}
 const moduleStart=h.indexOf('<script type="module">'),moduleEnd=h.indexOf('</script>',moduleStart);if(moduleEnd<0)throw Error('Engine module not found');
 h=h.slice(0,moduleEnd)+'\n'+start+'\n'+read('deep-controls.js')+'\n'+read('deep-ergonomics.js')+'\n'+end+'\n'+h.slice(moduleEnd);
 for(const m of h.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g))if(m[1].trim())new Function(m[1]);

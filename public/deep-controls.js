@@ -31,9 +31,16 @@ function installDepthLab(){
    D12_EPOCH++;
   });
  }
- function vary(){const fx=selected(),spec=specFor();if(!fx||!spec)return;
-  edit(()=>{d12Defaults(fx);for(const[k,,min,max,step]of spec.controls){const key='deep_'+k;if(fx.deepLocks?.[key])continue;
-   fx[key]=d12Clamp(Math.round((fx[key]+(Math.random()-.5)*(max-min)*.24)/step)*step,min,max);if(fx.deepKeys)delete fx.deepKeys[key];}
+ let copiedSettings;
+ function seededRandom(seed){
+  let state=2166136261;
+  for(const character of seed)state=Math.imul(state^character.codePointAt(0),16777619);
+  return ()=>{state=(Math.imul(state,1664525)+1013904223)>>>0;return state/4294967296;};
+ }
+ function vary(seed){const fx=selected(),spec=specFor();if(!fx||!spec)return;
+  const random=seed ? seededRandom(seed) : Math.random;
+  edit(()=>{d12Defaults(fx);for(const[k,,min,max,step,def]of spec.controls){const key='deep_'+k;if(fx.deepLocks?.[key])continue;
+   fx[key]=d12Clamp(Math.round(((seed?def:fx[key])+(random()-.5)*(max-min)*.24)/step)*step,min,max);if(fx.deepKeys)delete fx.deepKeys[key];}
    fx.deepLook=-1;D12_EPOCH++;
   });
  }
@@ -48,6 +55,12 @@ function installDepthLab(){
   return `<section class="depth-card" aria-label="Deep effect controls"><div class="depth-heading">DEPTH LAB / ${spec.temporal?'FRAME MEMORY':'SIGNAL DESIGN'}</div>
    <div class="depth-look"><button type="button" data-depth-prev aria-label="Previous look">‹</button><strong>${esc(lookName)}</strong><button type="button" data-depth-next aria-label="Next look">›</button></div>
    <div class="depth-actions"><button type="button" data-depth-vary>✧ Vary unlocked</button><button type="button" data-depth-reset>Reset</button><button type="button" data-depth-copy>Duplicate</button></div>
+   <details class="depth-section"><summary>Reuse settings</summary>
+    <div class="depth-actions"><button type="button" data-depth-reuse="copy">Copy settings</button><button type="button" data-depth-reuse="paste">Paste settings</button></div>
+    <div class="depth-actions"><button type="button" data-depth-reuse="effect">Save effect</button><button type="button" data-depth-reuse="stack">Save stack</button></div>
+    <label class="field-label">Variation seed<input class="field" data-depth-seed maxlength="80" placeholder="Enter a seed"></label>
+    <div class="depth-actions"><button type="button" data-depth-reuse="seed">Apply seed</button></div>
+   </details>
    ${!renderer.gl?'<p class="depth-note">These deep processors need WebGL2. Your settings are retained, but this browser cannot render them.</p>':''}
    ${spec.controls.map(c=>row(fx,c)).join('')}
    ${spec.colors?`<div class="depth-colors"><label>Shadow ink<input type="color" data-depth-color="deepColor0" value="${fx.deepColor0||'#16112f'}"></label><label>Highlight ink<input type="color" data-depth-color="deepColor1" value="${fx.deepColor1||'#e5c9fa'}"></label></div>`:''}
@@ -66,6 +79,31 @@ function installDepthLab(){
   else if(b.hasAttribute('data-depth-next'))look((fx.deepLook??0)+1);
   else if(b.hasAttribute('data-depth-vary'))vary();
   else if(b.hasAttribute('data-depth-reset'))edit(()=>{spec.controls.forEach(([k,,,,,v])=>fx['deep_'+k]=v);fx.deepKeys={};fx.deepDriver='off';fx.deepBlend=0;fx.deepRegion=0;fx.deepLook=0;D12_EPOCH++;});
+  else if(b.dataset.depthReuse==='copy'){
+   copiedSettings=structuredClone(fx);
+   delete copiedSettings.d12Token;
+   notify('Effect settings copied for this session.');
+  }
+  else if(b.dataset.depthReuse==='paste'){
+   if(copiedSettings?.id!==fx.id){notify('Copy settings from the same effect type first.');return;}
+   edit(()=>{
+    const replacement={...structuredClone(copiedSettings),d12Token:fx.d12Token};
+    activeChain()[state.selectedFx]=replacement;
+    D12_EPOCH++;
+   });
+   notify('Effect settings pasted.');
+  }
+  else if(b.dataset.depthReuse==='seed'){
+   const seed=b.closest('details').querySelector('[data-depth-seed]').value.trim();
+   if(!seed){notify('Enter a seed to repeat this variation.');return;}
+   vary(seed);
+   const field=root.querySelector('[data-depth-seed]');
+   if(field)field.value=seed;
+  }
+  else if(b.dataset.depthReuse==='effect'||b.dataset.depthReuse==='stack'){
+   const name=window.prompt('Name this memory slot',EFFECT_BY_ID[fx.id].name)?.trim();
+   if(name)saveCustomRecipe(name,b.dataset.depthReuse==='effect'?[fx]:activeChain());
+  }
   else if(b.hasAttribute('data-depth-copy'))edit(()=>{const copy=structuredClone(fx);copy.d12Token=newid();activeChain().splice(state.selectedFx+1,0,copy);state.selectedFx++;});
  });
  root.addEventListener('change',e=>{const fx=selected();if(!fx)return;const t=e.target;

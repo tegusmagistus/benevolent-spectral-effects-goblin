@@ -25,6 +25,33 @@ try{
  const controls=await page.evaluate(()=>{const t=window.__VFX02_TEST__,lab=window.__BSEG_DEPTH__,s=t.getState();s.effects=[];s.layers.forEach(l=>l.effects=[]);t.addEffect('ripple');const f=lab.getSelected();const start=f.deep_frequency;f.deepLocks={deep_frequency:true};lab.vary();const lock=f.deep_frequency===start;f.deepLocks={};f.deep_amplitude=0;t.seek(0);lab.setKey('deep_amplitude');f.deep_amplitude=20;t.seek(2);lab.setKey('deep_amplitude');const midpoint=lab.evaluate(f,1,{}).deep_amplitude;f.deepKeys={};f.deep_amplitude=10;f.deepTarget='deep_amplitude';f.deepDriver='sine';f.deepRate=1;f.deepMotion=.5;const animated=lab.evaluate(f,.25,{}).deep_amplitude;f.deepDriver='bass';const audio=lab.evaluate(f,.25,{bass:1}).deep_amplitude;const saved=lab.serialize();lab.restoreJSON(saved);return{lock,midpoint,animated,audio,roundTrip:lab.getSelected().deepTarget==='deep_amplitude'};});report.controls=controls;assert(controls.lock&&controls.midpoint===10&&controls.animated>10&&controls.audio>10&&controls.roundTrip);report.checks.push('Parameter locks, linear keyframes, motion/audio modulation and project settings round-trip');
  await page.evaluate(()=>{const t=window.__VFX02_TEST__,s=t.getState();s.effects=[];s.layers.forEach(l=>l.effects=[]);t.addEffect('crystalglass');});
  await page.click('[data-depth-next]');const lookBefore=await page.evaluate(()=>window.__BSEG_DEPTH__.getSelected().deepLook);await page.click('[data-depth-vary]');await page.evaluate(()=>window.__BSEG_DEPTH__.undo());assert.equal(await page.evaluate(()=>window.__BSEG_DEPTH__.getSelected().deepLook),lookBefore);report.checks.push('Look browsing, variation and undo');
+ for(const id of ['chromatic','bloom','echo']){
+  const read=()=>page.evaluate(()=>window.__BSEG_DEPTH__.getSelected());
+  await page.evaluate(id=>window.__VFX02_TEST__.addEffect(id),id);
+  const reuse=page.getByText('Reuse settings',{exact:true});
+  if(!await reuse.evaluate(el=>el.parentElement.open))await reuse.click();
+  const seed=page.locator('[data-depth-seed]');
+  await seed.fill('ghostgirl');
+  await page.click('[data-depth-reuse=seed]');
+  const first=await read();
+  await page.click('[data-depth-reuse=copy]');
+  await page.click('[data-depth-vary]');
+  await page.click('[data-depth-reuse=paste]');
+  assert.deepEqual(await read(),first);
+  await page.click('[data-depth-reset]');
+  await seed.fill('ghostgirl');
+  await page.click('[data-depth-reuse=seed]');
+  const repeated=await read();
+  for(const key of Object.keys(first).filter(k=>k.startsWith('deep_')))assert.equal(repeated[key],first[key]);
+  page.once('dialog',dialog=>dialog.accept(id+' test preset'));
+  await page.click('[data-depth-reuse=effect]');
+  const preset=await page.evaluate(()=>window.__VFX02_TEST__.getState().customRecipes.at(-1));
+  assert.deepEqual(preset.effects,[repeated]);
+ }
+ page.once('dialog',dialog=>dialog.accept('Test stack'));
+ await page.click('[data-depth-reuse=stack]');
+ assert(await page.evaluate(()=>{const s=window.__VFX02_TEST__.getState();return s.customRecipes.at(-1).effects.length===s.effects.length;}));
+ report.checks.push('Seed repeatability, copy/paste, effect presets and stack presets');
  const legacy=await page.evaluate(()=>{const t=window.__VFX02_TEST__,s=t.getState(),gl=document.querySelector('#stage').getContext('webgl2');return Array.from(document.querySelectorAll('[data-add-fx]'),b=>b.dataset.addFx).map(id=>{s.effects=[];s.layers.forEach(l=>l.effects=[]);t.addEffect(id);s.effects[0].d12=undefined;t.renderFrame(.1);return{id,error:gl.getError()};});});assert(legacy.every(r=>r.error===0));report.checks.push('Legacy processor regression: no GPU errors');
  const temporal=await page.evaluate(()=>{const t=window.__VFX02_TEST__,lab=window.__BSEG_DEPTH__,s=t.getState(),gl=document.querySelector('#stage').getContext('webgl2');s.effects=[];s.layers.forEach(l=>l.effects=[]);t.addEffect('echo');t.addEffect('trails');for(let i=0;i<12;i++){s.layers.find(l=>l.type==='image').x=i;t.renderFrame(i/30);}s.layers.find(l=>l.type==='image').x=0;const stats=lab.stats();t.seek(0);t.renderFrame(0);const a=new Uint8Array(gl.drawingBufferWidth*gl.drawingBufferHeight*4);gl.readPixels(0,0,gl.drawingBufferWidth,gl.drawingBufferHeight,gl.RGBA,gl.UNSIGNED_BYTE,a);t.renderFrame(0);const b=new Uint8Array(a.length);gl.readPixels(0,0,gl.drawingBufferWidth,gl.drawingBufferHeight,gl.RGBA,gl.UNSIGNED_BYTE,b);return{stats,pausedStable:a.every((x,i)=>x===b[i]),error:gl.getError()};});report.temporal=temporal;assert(temporal.pausedStable&&temporal.error===0&&temporal.stats[0].entries>=2&&temporal.stats.every(s=>s.entries<=8&&s.bytes<30e6));report.checks.push('Isolated temporal history, pause stability, seek reset and bounded buffers');
  await page.evaluate(()=>{const t=window.__VFX02_TEST__,s=t.getState();s.effects=[];s.layers.forEach(l=>l.effects=[]);['crystalglass','smoke','anamorphic'].forEach(t.addEffect);t.renderFrame(.3);});
