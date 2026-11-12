@@ -75,6 +75,32 @@ function mountProConsole() {
   const renderBadge=make('span',{class:'pro-render-badge',id:'proRenderBadge'},renderer.gl?'GPU / WEBGL2':'LIMITED / CANVAS');
   document.querySelector('.stage-top').append(renderBadge);
   $('searchEffect').setAttribute('aria-label','Search all effects');
+  // Keep category browsing available without consuming the phone's effect list.
+  const searchRow=make('div',{class:'mobile-effect-search'});
+  const search=$('searchEffect'),categories=$('categoryBar');
+  const filterToggle=make('button',{type:'button',class:'mobile-effect-filters','aria-controls':'categoryBar','aria-expanded':'false'},'Filters ▾');
+  search.before(searchRow);searchRow.append(search,filterToggle);
+  library.classList.add('mobile-filters-closed');
+  function showFilters(open){
+    library.classList.toggle('mobile-filters-closed',!open);
+    filterToggle.setAttribute('aria-expanded',String(open));
+  }
+  function syncFilterLabel(){
+    const selected=categories.querySelector('.active')?.textContent?.trim()||'All';
+    filterToggle.textContent=(selected==='All'?'Filters':selected)+' ▾';
+    filterToggle.setAttribute('aria-label','Effect categories, current filter: '+selected);
+  }
+  filterToggle.onclick=()=>showFilters(filterToggle.getAttribute('aria-expanded')!=='true');
+  categories.addEventListener('click',e=>{
+    if(!e.target.closest('button'))return;
+    if(mobile.matches){showFilters(false);filterToggle.focus({preventScroll:true});}
+    syncFilterLabel();
+  });
+  searchRow.addEventListener('keydown',e=>{if(e.key==='Escape'){showFilters(false);filterToggle.focus();}});
+  categories.addEventListener('keydown',e=>{if(e.key==='Escape'){showFilters(false);filterToggle.focus();}});
+  new MutationObserver(syncFilterLabel).observe(categories,{attributes:true,attributeFilter:['class'],childList:true,subtree:true});
+  syncFilterLabel();
+
   const help=make('div',{class:'pro-capability-note',role:'status'},'WebGL2 is unavailable in this browser. The five Tibetan-inspired processors still work; other processors need WebGL2.');
   help.hidden=!!renderer.gl;library.insertBefore(help,$('effectsLibrary'));
 

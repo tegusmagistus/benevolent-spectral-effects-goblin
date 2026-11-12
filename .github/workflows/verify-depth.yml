@@ -1,13 +1,14 @@
 name: Verify Depth Lab effects
 on:
   push:
-    branches: [feature/depth-lab-012, feature/resizable-preview, feature/laptop-preview, main]
+    branches: [feature/depth-lab-012, feature/resizable-preview, feature/laptop-preview, feature/mobile-effects, main]
     paths:
       - 'public/deep-*'
       - 'public/preview-window.css'
       - 'public/console-pro.js'
       - 'refine-header.mjs'
       - 'tests/verify-preview.cjs'
+      - 'tests/verify-mobile-effects.cjs'
       - 'deep-build.mjs'
       - 'tests/*depth.cjs'
       - '.github/workflows/verify-depth.yml'
@@ -37,6 +38,7 @@ jobs:
           python3 -m http.server 8765 &
           curl --retry 4 --retry-connrefused --fail http://localhost:8765/public/ -o /dev/null
           node tests/verify-preview.cjs
+          node tests/verify-mobile-effects.cjs
       - name: Browser, shader, controls and export verification
         run: node tests/verify-depth.cjs
       - name: Verify live public site after production update
