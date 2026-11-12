@@ -162,7 +162,11 @@ body.pro-console #stageShell.preview-expanded {
 @media (min-width: 1001px) {
   body.pro-console .workspace { grid-template-rows: minmax(0, 1fr) 94px !important; }
   body.pro-console #app .center { grid-template-rows: minmax(0, 1fr) 38px 59px 54px !important; }
-  body.pro-console #app { grid-template-rows: clamp(120px, 15vh, 164px) 44px 22px minmax(0, 1fr) 26px !important; }
+  body.pro-console.bseg-009 #app {
+    grid-template-rows: clamp(120px, 14vh, 164px) 44px 22px minmax(0, 1fr) 26px !important;
+  }
+  body.pro-console #stageShell .monitor-unit { grid-template-rows: minmax(0, 1fr); }
+  body.pro-console #stageShell .monitor-rail { display: none; }
   body.pro-console .transport { height: 38px !important; }
 }
 @media (max-width: 1000px) {
