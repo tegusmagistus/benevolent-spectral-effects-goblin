@@ -11,6 +11,6 @@ replace('const old=media.get(layer.id);if(old)',"if(attachEpoch!==BSEG_SESSION_E
 replace('async function importFiles(fileList){','async function importFiles(fileList){\n const importEpoch=BSEG_SESSION_EPOCH;');
 replace('try{await attachMedia(layer,file);state.layers.forEach',"try{await attachMedia(layer,file);if(importEpoch!==BSEG_SESSION_EPOCH){releaseSessionMedia(layer.id);return;}state.layers.forEach");
 replace('}catch(e){console.warn(e);if(status){status.textContent=`Could not import',"}catch(e){if(importEpoch!==BSEG_SESSION_EPOCH)return;console.warn(e);if(status){status.textContent=`Could not import");
-const p=h.lastIndexOf('</script>');h=h.slice(0,p)+'\n'+start+'\n'+readFileSync('public/session-controls.js','utf8')+'\n'+end+'\n'+h.slice(p);
+const moduleStart=h.indexOf('<script type="module">'),p=h.indexOf('</script>',moduleStart);if(moduleStart<0||p<0)throw Error('Engine module not found');h=h.slice(0,p)+'\n'+start+'\n'+readFileSync('public/session-controls.js','utf8')+'\n'+end+'\n'+h.slice(p);
 for(const m of h.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g))if(m[1].trim())new Function(m[1]);
 writeFileSync('public/index.html',h);console.log('Fresh startup and reversible session controls installed.');
