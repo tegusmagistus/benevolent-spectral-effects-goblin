@@ -22,7 +22,7 @@ function installSessionControls(){
   setCanvas();finish('Fresh session. Undo restores the previous edit.');syncActions();
  }
  function clearVfx(){if(busy())return;if(!state.effects.length&&!state.layers.some(l=>l.effects?.length)){notify('No VFX to clear.');return;}snapshot();state.effects=[];state.layers.forEach(l=>l.effects=[]);state.selectedFx=0;state.audioBand='off';finish('All layer and master VFX cleared. Undo is available.');}
- function resetEffect(){if(busy())return;const fx=selectedEffect();if(!fx)return;snapshot();const reset={id:fx.id,amount:fx.id==='glitch'?.65:.86,enabled:true,keys:[],audioBand:'off',audioGain:1,...ritualSettings(fx.id)};if(D12[fx.id])d12Defaults(reset);activeChain()[state.selectedFx]=reset;state.audioBand='off';finish('Selected effect reset, including animation and modulation.');}
+ function resetEffect(){if(busy())return;const fx=selectedEffect();if(!fx)return;snapshot();const reset={id:fx.id,amount:fx.id==='glitch'?.65:.86,enabled:true,keys:[],audioBand:'off',audioGain:1,...ritualSettings(fx.id)};if(D12[fx.id]){d12Defaults(reset);reset.deepDriver='off';reset.deepKeys={};}activeChain()[state.selectedFx]=reset;state.audioBand='off';finish('Selected effect reset, including animation and modulation.');}
  deleteLayer=function(){
   if(busy())return;const l=chosenLayer();if(!l)return;snapshot();BSEG_SESSION_EPOCH++;pauseAll();releaseSessionMedia(l.id);depthMaps.delete(l.id);trackers.delete(l.id);
   state.layers=state.layers.filter(x=>x.id!==l.id);state.layers.forEach(x=>{if(x.followTracker===l.id)x.followTracker='';});state.selectedLayer=state.layers.at(-1)?.id||'';state.selectedFx=0;
