@@ -1,0 +1,29 @@
+const {chromium}=require('playwright-core'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
+const out='depth-results';fs.mkdirSync(out,{recursive:true});const report={status:'RUNNING',checks:[],errors:[]};
+(async()=>{let browser;try{
+ browser=await chromium.launch({executablePath:['/usr/bin/google-chrome','/usr/bin/chromium'].find(fs.existsSync),args:['--no-sandbox','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
+ const page=await browser.newPage({viewport:{width:1440,height:900}});page.on('pageerror',e=>report.errors.push(e.message));
+ await page.goto('http://localhost:8765/public/');await page.waitForFunction(()=>window.__VFX02_TEST__?.newSession);
+ await page.evaluate(()=>{const t=__VFX02_TEST__,s=t.getState();s.customRecipes=[{id:'keep-me',name:'Saved memory',effects:[],custom:true}];t.addLayer('text');t.addEffect('vertigoflow');});await page.waitForTimeout(400);
+ await page.reload();await page.waitForFunction(()=>window.__VFX02_TEST__?.newSession);
+ let s=await page.evaluate(()=>__VFX02_TEST__.getState());assert(s.layers.every(l=>l.type==='demo')&&s.effects.length===0&&s.layers.every(l=>!l.effects.length));assert.equal(s.customRecipes[0].id,'keep-me');report.checks.push('Reopen starts fresh while retaining saved recipes');
+ await page.locator('#proToolsButton').click();await page.locator('#recoverSession').click();await page.waitForFunction(()=>__VFX02_TEST__.getState().layers.some(l=>l.type==='text'));report.checks.push('Previous session is restored only through explicit recovery');
+ await page.locator('#newProject').click();assert((await page.evaluate(()=>__VFX02_TEST__.getState())).layers.every(l=>l.type==='demo'));await page.locator('.pro-tools-close').click();
+ await page.setInputFiles('#mediaUpload',path.resolve('tests/motion.mp4'));await page.waitForFunction(()=>{const t=__VFX02_TEST__,l=t.getState().layers.find(l=>l.type==='video');return l&&t.getMedia(l.id)?.readyState>=2;});
+ const id=await page.evaluate(()=>__VFX02_TEST__.getState().selectedLayer);
+ await page.locator('#playButton').click();await page.waitForFunction(()=>__VFX02_TEST__.getState().time>.1);await page.locator('#removeInspectorLayer').click();
+ assert.equal(await page.evaluate(id=>__VFX02_TEST__.getState().layers.some(l=>l.id===id),id),false);assert.equal(await page.evaluate(id=>__VFX02_TEST__.getMedia(id),id),null);assert.equal(await page.evaluate(()=>__VFX02_TEST__.getState().playing),false);
+ await page.locator('#undoButton').click();await page.waitForFunction(id=>__VFX02_TEST__.getMedia(id)?.readyState>=2,id);assert(await page.evaluate(id=>__VFX02_TEST__.getState().layers.some(l=>l.id===id),id));
+ await page.locator('#redoButton').click();assert.equal(await page.evaluate(id=>__VFX02_TEST__.getMedia(id),id),null);await page.locator('#undoButton').click();await page.waitForFunction(id=>__VFX02_TEST__.getMedia(id)?.readyState>=2,id);
+ report.checks.push('Playing video removal stops/releases media; undo restores its real source; redo removes it');
+ await page.evaluate(()=>{const t=__VFX02_TEST__;t.setScope('layer');t.addEffect('vertigoflow');const f=t.getState().layers.find(l=>l.id===t.getState().selectedLayer).effects.at(-1);f.height=.1;f.keys=[{t:0,v:1}];f.audioBand='bass';});
+ await page.locator('#resetSelectedEffect').click();s=await page.evaluate(()=>__VFX02_TEST__.getState());let f=s.layers.find(l=>l.id===s.selectedLayer).effects.at(-1);assert.equal(f.height,.72);assert.equal(f.keys.length,0);assert.equal(f.audioBand,'off');
+ await page.evaluate(()=>{const t=__VFX02_TEST__;t.setScope('master');t.addEffect('ripple');const f=t.getState().effects.at(-1);f.deepKeys={deep_amplitude:[{t:0,v:20}]};f.deepDriver='bass';f.deep_amplitude=30;});await page.locator('#resetSelectedEffect').click();
+ s=await page.evaluate(()=>__VFX02_TEST__.getState());f=s.effects.at(-1);assert.equal(f.deepDriver,'off');assert(!Object.keys(f.deepKeys||{}).length);report.checks.push('Selected ritual and deep effects reset animation, audio modulation and parameters');
+ await page.locator('#quickClearVfx').click();s=await page.evaluate(()=>__VFX02_TEST__.getState());assert(!s.effects.length&&s.layers.every(l=>!l.effects.length));await page.locator('#undoButton').click();s=await page.evaluate(()=>__VFX02_TEST__.getState());assert(s.effects.length&&s.layers.some(l=>l.effects.length));await page.locator('#quickClearVfx').click();report.checks.push('Clear VFX removes both scopes and supports undo');
+ await page.locator('#proToolsButton').click();await page.locator('#newProject').click();assert.deepEqual(await page.evaluate(()=>__VFX02_TEST__.sessionResources()),{media:0,depth:0,trackers:0,audio:'off'});await page.screenshot({path:path.join(out,'session-desktop.png')});
+ await page.setViewportSize({width:390,height:844});await page.evaluate(()=>__BSEG_UI__.setPanel('tools'));await page.screenshot({path:path.join(out,'session-phone.png')});
+ for(const id of ['newProject','recoverSession','clearAllVfx','removeSessionLayer']){const r=await page.locator('#'+id).boundingBox();assert(r&&r.x>=0&&r.x+r.width<=390,`${id} phone layout`);}
+ assert(!await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth));report.checks.push('New session releases resources; session controls fit phone and desktop');
+ await page.reload();await page.waitForFunction(()=>window.__VFX02_TEST__?.newSession);s=await page.evaluate(()=>__VFX02_TEST__.getState());assert(s.layers.every(l=>l.type==='demo'&&!l.effects.length)&&!s.effects.length);assert.deepEqual(report.errors,[]);report.status='PASS';
+}catch(e){report.status='FAIL';report.failure=e.stack;process.exitCode=1;}finally{fs.writeFileSync(path.join(out,'session-verification.json'),JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));if(browser)await browser.close();}})();
