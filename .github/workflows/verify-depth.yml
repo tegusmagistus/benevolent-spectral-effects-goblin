@@ -1,7 +1,7 @@
 name: Verify Depth Lab effects
 on:
   push:
-    branches: [feature/depth-lab-012, feature/resizable-preview, feature/laptop-preview, feature/mobile-effects, feature/vertigo-flow, fix/fresh-start, main]
+    branches: [feature/depth-lab-012, feature/resizable-preview, feature/laptop-preview, feature/mobile-effects, feature/vertigo-flow, fix/fresh-start, feature/analogue-signals, main]
     paths:
       - 'public/deep-*'
       - 'public/preview-window.css'
@@ -10,6 +10,9 @@ on:
       - 'tests/verify-preview.cjs'
       - 'tests/verify-mobile-effects.cjs'
       - 'deep-build.mjs'
+      - 'analogue-build.mjs'
+      - 'public/analogue-signals.js'
+      - 'tests/verify-analogue.cjs'
       - 'session-build.mjs'
       - 'public/session-controls.js'
       - 'tests/verify-session.cjs'
@@ -43,6 +46,7 @@ jobs:
         run: |
           python3 -m http.server 8765 &
           curl --retry 4 --retry-connrefused --fail http://localhost:8765/public/ -o /dev/null
+          node tests/verify-analogue.cjs
           node tests/verify-session.cjs
           node tests/verify-preview.cjs
           node tests/verify-mobile-effects.cjs

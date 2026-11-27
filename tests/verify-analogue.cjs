@@ -1,0 +1,41 @@
+const {chromium}=require('playwright-core'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),{execFileSync}=require('node:child_process');
+const out='depth-results';fs.mkdirSync(out,{recursive:true});
+const report={status:'RUNNING',checks:[],errors:[]};
+const ctx={RITUAL_DEFS:{}};vm.createContext(ctx);vm.runInContext(fs.readFileSync('public/analogue-signals.js','utf8'),ctx);
+const ids=Object.keys(ctx.RITUAL_DEFS),specs=JSON.parse(JSON.stringify(ctx.RITUAL_DEFS));
+assert.equal(ctx.analogueHash(3,8,73),ctx.analogueHash(3,8,73));assert.notEqual(ctx.analogueHash(3,8,73),ctx.analogueHash(3,8,74));
+for(const [w,h] of [[1920,1080],[1080,1920],[4096,4096]]){const d=ctx.analogueDimensions(w,h,960);assert(Math.max(...d)<=960);assert(Math.abs(d[0]/d[1]-w/h)<.01);}
+(async()=>{let browser;try{
+ browser=await chromium.launch({executablePath:['/usr/bin/google-chrome','/usr/bin/chromium'].find(fs.existsSync),args:['--no-sandbox','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
+ const page=await browser.newPage({viewport:{width:1440,height:900},acceptDownloads:true});
+ await page.addInitScript(()=>{const get=HTMLCanvasElement.prototype.getContext;HTMLCanvasElement.prototype.getContext=function(type,...args){return /webgl/.test(type)?null:get.call(this,type,...args);};});
+ page.on('pageerror',e=>report.errors.push(e.message));await page.goto('http://localhost:8765/public/');await page.waitForFunction(()=>window.__VFX02_TEST__?.getEngine().rituals.includes('analogueContour'));
+ await page.evaluate(async()=>{const t=__VFX02_TEST__,c=document.createElement('canvas');c.width=320;c.height=400;const x=c.getContext('2d');x.fillStyle='#000';x.fillRect(0,0,320,400);const g=x.createRadialGradient(130,130,3,170,190,160);g.addColorStop(0,'white');g.addColorStop(1,'#202030');x.fillStyle=g;x.beginPath();x.ellipse(160,170,95,140,0,0,7);x.fill();x.fillRect(100,290,120,110);x.fillStyle='#080818';x.fillRect(100,145,35,10);x.fillRect(180,145,35,10);x.fillRect(130,235,60,8);const b=await new Promise(r=>c.toBlob(r));await t.importFiles([new File([b],'signal-fixture.png',{type:'image/png'})]);const s=document.querySelector('#aspectSelect');s.value='source';s.dispatchEvent(new Event('change',{bubbles:true}));});
+ report.renders=await page.evaluate(({ids,specs})=>{const t=__VFX02_TEST__,s=t.getState(),c=document.querySelector('#stage'),x=c.getContext('2d');t.setScope('master');s.effects=[];s.layers.forEach(l=>l.effects=[]);
+ const pixels=()=>x.getImageData(0,0,c.width,c.height).data,delta=(a,b)=>a.reduce((v,n,i)=>v+Math.abs(n-b[i]),0)/a.length; t.renderFrame(1);const original=pixels(),results={};
+ for(const id of ids){s.effects=[];t.addEffect(id);const f=s.effects[0];t.renderFrame(1);const active=pixels();t.renderFrame(1);const stable=delta(active,pixels());t.renderFrame(2.5);const motion=delta(active,pixels());const controls={};
+ for(const [k,,min,max] of specs[id].controls){const old=f[k];f[k]=min;t.renderFrame(1);const lo=pixels();f[k]=k==='hue'?200:k==='seed'?1973:max;t.renderFrame(1);controls[k]=delta(lo,pixels());f[k]=old;}
+ f.speed=0;t.renderFrame(0);const fixed=pixels();t.renderFrame(5);const freeze=delta(fixed,pixels());f.speed=.35;f.amount=0;t.renderFrame(1);const zero=delta(original,pixels());f.amount=1;f.enabled=false;t.renderFrame(1);const bypass=delta(original,pixels());f.enabled=true;t.addEffect('vertigoflow');t.renderFrame(1);const orderA=pixels();s.effects.reverse();t.renderFrame(1);const order=delta(orderA,pixels());results[id]={active:delta(original,active),stable,motion,freeze,zero,bypass,order,controls};}
+ return results;},{ids,specs});
+ for(const [id,r] of Object.entries(report.renders)){assert(r.active>1&&r.stable===0&&r.motion>.01&&r.freeze===0&&r.zero===0&&r.bypass===0&&r.order>.1,JSON.stringify({id,r}));for(const [k,v] of Object.entries(r.controls))assert(v>.001,`${id}.${k}: ${v}`);}
+ report.checks.push('All four render; every control changes pixels; deterministic seed/time, speed-zero freeze, bypass, zero strength and stack ordering');
+ await page.evaluate(()=>{const t=__VFX02_TEST__;t.clearVfx();t.setScope('master');t.addEffect('analogueDissolve');});
+ await page.getByLabel('dissolve precise value',{exact:true}).fill('0.81');await page.getByLabel('dissolve precise value',{exact:true}).press('Tab');assert.equal(await page.evaluate(()=>__VFX02_TEST__.getState().effects[0].dissolve),.81);
+ const roundtrip=await page.evaluate(()=>{const d=__BSEG_DEPTH__,j=d.serialize();d.restoreJSON(j);return d.serialize()===j;});assert(roundtrip);
+ await page.locator('#resetSelectedEffect').click();assert.equal(await page.evaluate(()=>__VFX02_TEST__.getState().effects[0].dissolve),.55);
+ for(const q of ['analog','analogue','analoge']){await page.getByRole('searchbox',{name:'Search all effects'}).fill(q);assert.equal(await page.locator('#effectsList [data-add-fx^="analogue"]').count(),4);}
+ await page.screenshot({path:path.join(out,'analogue-desktop.png')});await page.setViewportSize({width:390,height:844});
+ for(const item of await page.locator('#effectsList [data-add-fx^="analogue"] strong').all())assert(await item.evaluate(e=>e.scrollWidth<=e.clientWidth+1));assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));await page.screenshot({path:path.join(out,'analogue-phone.png')});
+ report.checks.push('Search aliases; real numeric controls; reset; project serialization; mobile title wrapping');
+ await page.setViewportSize({width:1440,height:900});
+ await page.setInputFiles('#mediaUpload',path.resolve('tests/motion.mp4'));await page.waitForFunction(()=>{const t=__VFX02_TEST__,l=t.getState().layers.find(l=>l.type==='video');return l&&t.getMedia(l.id)?.readyState>=2;});
+ await page.evaluate(()=>{const t=__VFX02_TEST__,s=t.getState();s.layers=s.layers.filter(l=>l.type==='video');s.layers.forEach(l=>l.effects=[]);s.effects=[];t.setScope('master');t.addEffect('analoguePhosphor');t.addEffect('analogueDissolve');s.duration=1;t.seek(0);});
+ await page.click('#playButton');await page.waitForFunction(()=>__VFX02_TEST__.getState().time>.15);await page.click('#playButton');
+ const download=page.waitForEvent('download',{timeout:60000});await page.click('#recordVideo');const d=await download,dest=path.join(out,'analogue-motion'+path.extname(d.suggestedFilename()));await d.saveAs(dest);
+ report.export=JSON.parse(execFileSync('ffprobe',['-v','error','-show_entries','stream=codec_type,width,height','-of','json',dest],{encoding:'utf8'}));assert(report.export.streams.some(s=>s.codec_type==='video'&&s.width===320&&s.height===180));assert(report.export.streams.some(s=>s.codec_type==='audio'));assert(fs.statSync(dest).size>1000);
+ report.checks.push('H.264 moving video import/playback; stacked analogue export with audio at source dimensions');
+ const gpu=await browser.newPage();gpu.on('pageerror',e=>report.errors.push(e.message));await gpu.goto('http://localhost:8765/public/');await gpu.waitForFunction(()=>window.__VFX02_TEST__?.getEngine().gpu);
+ report.gpu=await gpu.evaluate(()=>{const t=__VFX02_TEST__,s=t.getState(),g=document.querySelector('#stage').getContext('webgl2');t.setScope('master');s.effects=[];t.renderFrame(1);const a=new Uint8Array(g.drawingBufferWidth*g.drawingBufferHeight*4);g.readPixels(0,0,g.drawingBufferWidth,g.drawingBufferHeight,g.RGBA,g.UNSIGNED_BYTE,a);t.addEffect('analogueContour');t.addEffect('crystalglass');t.renderFrame(1);const b=new Uint8Array(a.length);g.readPixels(0,0,g.drawingBufferWidth,g.drawingBufferHeight,g.RGBA,g.UNSIGNED_BYTE,b);return {changed:a.some((v,i)=>v!==b[i]),error:g.getError()};});assert(report.gpu.changed&&report.gpu.error===0);report.checks.push('WebGL mixed analogue/shader stack and Canvas fallback both render');
+ assert.deepEqual(report.errors,[]);report.status='PASS';
+ }catch(e){report.status='FAIL';report.failure=e.stack;process.exitCode=1;}finally{fs.writeFileSync(path.join(out,'analogue-verification.json'),JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));if(browser)await browser.close();}
+})();

@@ -24,3 +24,5 @@ writeFileSync(file,h);console.log('BSEG Depth Lab 012 applied.');
 
 await import('./vertigo-build.mjs');
 await import('./session-build.mjs');
+
+await import('./analogue-build.mjs');
