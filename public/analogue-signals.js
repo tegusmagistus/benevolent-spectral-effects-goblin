@@ -14,8 +14,8 @@ for(const [id,name,subtitle,extra,defaults] of [
  ['analogueDissolve','ANALOGUE / SIGNAL DISSOLVE','Contours breaking into drifting phosphor particles',[['dissolve','Dissolution',0,1,.01,.55],['spread','Particle drift',0,1,.01,.3]],{hue:325,glow:.4}],
  ['analogueWire','ANALOGUE / WIREFIELD','Crossed signal mesh shaped by the light in your footage',[],{density:48,hue:155,relief:.7,jitter:.08}],
  ['analogueRoseDust','ANALOGUE / ROSE DUST','Soft pink contours dissolving into fine rose phosphor grains',[
-  ['dissolve','Dissolution',0,1,.01,.82],['spread','Particle drift',0,1,.01,.15],['grain','Grain size',.3,2,.05,.7]
- ],{density:125,hue:333,glow:.3,relief:.3,width:.85,jitter:.18}],
+  ['dissolve','Dissolution',0,1,.01,.72],['spread','Particle drift',0,1,.01,.08],['grain','Grain size',.3,2,.05,1.4]
+ ],{density:125,hue:333,glow:.65,relief:.3,width:.85,jitter:.18}],
  ['analogueNeonVeil','ANALOGUE / NEON VEIL','Violet signal contours inside a hot pink halo, with particle breakup',[
   ['haloHue','Halo colour',0,360,1,325],['split','Colour separation',0,1,.01,.35],['dissolve','Dissolution',0,1,.01,.28]
  ],{density:85,hue:258,glow:1.25,relief:.38,width:1.05,jitter:.4}],
