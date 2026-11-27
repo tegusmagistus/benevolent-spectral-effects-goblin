@@ -22,9 +22,22 @@ Line density, contour displacement, shadow cutoff, line width, glow, hue, signal
 
 These effects use the existing layer/master stacks, enable/bypass, strength keyframes, audio strength modulation, presets, project settings, reset and Clear VFX. Effect-specific parameters use existing sliders and numeric inputs; they do not yet have their own automation lanes. Apply one reconstruction processor first, then add optical effects or temporal effects as desired. Order remains meaningful.
 
+## Keeping footage detailed
+
+Click **Crisp detail** in any Analogue inspector for Fine sampling, narrower lines, reduced geometric displacement, stronger edge definition and less glow. On particle/broken-line effects it reconnects traces into continuous lines. Colours, seed, effect mix and animation/audio settings stay as chosen; Undo reverses the shortcut and Reset restores the effect's original look.
+
+- **Detail quality**: 1 Draft, 2 Fine, 3 Ultra. Increases source sampling and line segments; does not change canvas/export dimensions.
+- **Shape clarity**: reduces geometric warping, channel offsets and particle drift, so features stay closer to their source positions.
+- **Fine edge definition**: local luminance sharpening for eyes, hair, clothing and fine contrast; high amounts can also emphasise source noise.
+- **Glow softness**: narrows the halo independently of its brightness.
+- **Continuous lines**: reconnects dots and broken segments on the fragmenting effects; set to zero for the original breakup.
+- **Line density**: now extends to 320. Excessively dense or thick lines can merge; combine with narrower line width.
+
+Existing settings keep the original Draft sampling and neutral detail controls until adjusted. The detail shortcut is optional. It cannot reconstruct information absent from the uploaded footage.
+
 ## Performance and compatibility
 
-The shared Canvas processor is reused in both WebGL stacks and Canvas fallback. Sampling is capped at 384 pixels on the longest edge and the signal drawing surface at 960; output keeps the existing chosen export resolution and aspect ratio. This deliberately limits fine detail at 4K. Buffers are reused across frames. Each analogue stage reads its source once; stacked reconstruction effects cost more than one stage. This is a CPU path, not a new GPU shader pipeline. Physical iPhone/Safari performance has not been verified.
+The shared Canvas processor is reused in both WebGL stacks and Canvas fallback. Draft sampling is capped at 384 pixels on the longest edge and drawing at 960. Fine raises these to 768/1440 and Ultra to 1536/1920; line paths use 192/384/768 segments respectively. Quality caps avoid unbounded buffers; Ultra can substantially reduce playback speed on phones. Output keeps the existing chosen export resolution and aspect ratio. This deliberately limits fine detail at 4K. Buffers are reused across frames. Each analogue stage reads its source once; stacked reconstruction effects cost more than one stage. This is a CPU path, not a new GPU shader pipeline. Physical iPhone/Safari performance has not been verified.
 
 Original artwork, layout, media audio and export controls remain intact. `analogue-build.mjs` injects the definitions and renderer into the preserved engine, fails on changed anchors and is safe to run repeatedly.
 
