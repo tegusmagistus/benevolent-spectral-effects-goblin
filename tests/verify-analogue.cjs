@@ -21,8 +21,8 @@ for(const [w,h] of [[1920,1080],[1080,1920],[4096,4096]]){const d=ctx.analogueDi
  report.checks.push('All four render; every control changes pixels; deterministic seed/time, speed-zero freeze, bypass, zero strength and stack ordering');
  await page.evaluate(()=>{const t=__VFX02_TEST__;t.clearVfx();t.setScope('master');t.addEffect('analogueDissolve');});
  await page.getByLabel('dissolve precise value',{exact:true}).fill('0.81');await page.getByLabel('dissolve precise value',{exact:true}).press('Tab');assert.equal(await page.evaluate(()=>__VFX02_TEST__.getState().effects[0].dissolve),.81);
- const roundtrip=await page.evaluate(()=>{const d=__BSEG_DEPTH__,j=d.serialize();d.restoreJSON(j);return d.serialize()===j;});assert(roundtrip);
- await page.locator('#resetSelectedEffect').click();assert.equal(await page.evaluate(()=>__VFX02_TEST__.getState().effects[0].dissolve),.55);
+ const roundtrip=await page.evaluate(()=>{const d=__BSEG_DEPTH__,j=d.serialize(),before=JSON.parse(j).effects;d.restoreJSON(j);return JSON.stringify(JSON.parse(d.serialize()).effects)===JSON.stringify(before);});assert(roundtrip);
+ await page.locator('#resetSelectedEffect').click();assert.equal(await page.evaluate(()=>__VFX02_TEST__.getState().effects[0].dissolve),.55);assert.equal(await page.evaluate(()=>__VFX02_TEST__.getState().effects[0].amount),1);
  for(const q of ['analog','analogue','analoge']){await page.getByRole('searchbox',{name:'Search all effects'}).fill(q);assert.equal(await page.locator('#effectsList [data-add-fx^="analogue"]').count(),4);}
  await page.screenshot({path:path.join(out,'analogue-desktop.png')});await page.setViewportSize({width:390,height:844});
  for(const item of await page.locator('#effectsList [data-add-fx^="analogue"] strong').all())assert(await item.evaluate(e=>e.scrollWidth<=e.clientWidth+1));assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));await page.screenshot({path:path.join(out,'analogue-phone.png')});

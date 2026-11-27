@@ -9,6 +9,7 @@ patch("const CATEGORIES = ['All',","const CATEGORIES = ['All','Analogue',");
 patch('`${e.name} ${e.desc}`.toLowerCase()',"`${e.name} ${e.desc} ${e.category==='Analogue'?'analog analoge analogue crt phosphor oscilloscope':''}`.toLowerCase()");
 patch('TIBETAN-INSPIRED / MINI SETTINGS','${def.category===\'Analogue\'?\'ANALOGUE / SIGNAL SETTINGS\':\'TIBETAN-INSPIRED / MINI SETTINGS\'}');
 patch("amount:id==='glitch'?.65:.86","amount:ANALOGUE_IDS.includes(id)?1:id==='glitch'?.65:.86");
+patch("amount:fx.id==='glitch'?.65:.86","amount:ANALOGUE_IDS.includes(fx.id)?1:fx.id==='glitch'?.65:.86");
 const dispatch="if(ANALOGUE_IDS.includes(fx.id)){drawAnalogueSignal(this,c,source,w,h,time,p,fx.id);c.restore();oc.save();oc.globalAlpha=amount;oc.drawImage(this.fx,0,0);oc.restore();return out;}";
 patch("if(fx.id==='vertigoflow'){",dispatch+"\n if(fx.id==='vertigoflow'){");
 h=h.replaceAll('Canvas mode: Tibetan-inspired effects active; other effects need WebGL2','Canvas mode: Analogue + Tibetan-inspired effects active').replaceAll('Canvas mode: the Tibetan-inspired effects work.','Canvas mode: Analogue and Tibetan-inspired effects work.');

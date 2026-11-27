@@ -2,10 +2,10 @@
    Luminance is a relief proxy, not inferred 3D or subject segmentation. */
 const ANALOGUE_IDS = ['analogueContour','analoguePhosphor','analogueDissolve','analogueWire'];
 const analogueCommon = [
- ['density','Line density',24,160,1,78],['relief','Contour displacement',0,1,.01,.5],
- ['gate','Shadow cutoff',0,.65,.01,.12],['width','Line width',.3,2,.05,.8],
- ['glow','Phosphor glow',0,1.5,.01,.65],['hue','Signal colour',0,360,1,210],
- ['jitter','Signal instability',0,1,.01,.18],['speed','Signal speed',0,2,.01,.35],
+ ['density','Line density',24,160,1,90],['relief','Contour displacement',0,1,.01,.25],
+ ['gate','Shadow cutoff',0,.65,.01,.12],['width','Line width',.3,2,.05,1.15],
+ ['glow','Phosphor glow',0,1.5,.01,1.1],['hue','Signal colour',0,360,1,210],
+ ['jitter','Signal instability',0,1,.01,.12],['speed','Signal speed',0,2,.01,.35],
  ['seed','Noise seed',1,9999,1,73]
 ];
 for(const [id,name,subtitle,extra,defaults] of [
