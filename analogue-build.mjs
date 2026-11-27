@@ -14,4 +14,4 @@ const dispatch="if(ANALOGUE_IDS.includes(fx.id)){drawAnalogueSignal(this,c,sourc
 patch("if(fx.id==='vertigoflow'){",dispatch+"\n if(fx.id==='vertigoflow'){");
 h=h.replaceAll('Canvas mode: Tibetan-inspired effects active; other effects need WebGL2','Canvas mode: Analogue + Tibetan-inspired effects active').replaceAll('Canvas mode: the Tibetan-inspired effects work.','Canvas mode: Analogue and Tibetan-inspired effects work.');
 for(const m of h.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/g))if(m[1].trim())new Function(m[1]);
-writeFileSync(file,h);console.log('Analogue signal processors installed: contour, RGB phosphor, dissolve and wirefield.');
+writeFileSync(file,h);console.log('Analogue signal processors installed, including rose dust, neon veil and coral interference.');

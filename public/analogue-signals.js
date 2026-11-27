@@ -1,6 +1,6 @@
 /* Original analogue-inspired signal reconstruction. All processing stays on device.
    Luminance is a relief proxy, not inferred 3D or subject segmentation. */
-const ANALOGUE_IDS = ['analogueContour','analoguePhosphor','analogueDissolve','analogueWire'];
+const ANALOGUE_IDS = ['analogueContour','analoguePhosphor','analogueDissolve','analogueWire','analogueRoseDust','analogueNeonVeil','analogueCoralWave'];
 const analogueCommon = [
  ['density','Line density',24,160,1,90],['relief','Contour displacement',0,1,.01,.25],
  ['gate','Shadow cutoff',0,.65,.01,.12],['width','Line width',.3,2,.05,1.15],
@@ -12,13 +12,23 @@ for(const [id,name,subtitle,extra,defaults] of [
  ['analogueContour','ANALOGUE / CONTOUR','Luminous displaced contour lines on black',[],{}],
  ['analoguePhosphor','ANALOGUE / RGB PHOSPHOR','Broken CRT lines with spectral colour separation',[['rgb','RGB separation',0,1,.01,.45]],{hue:235,jitter:.3}],
  ['analogueDissolve','ANALOGUE / SIGNAL DISSOLVE','Contours breaking into drifting phosphor particles',[['dissolve','Dissolution',0,1,.01,.55],['spread','Particle drift',0,1,.01,.3]],{hue:325,glow:.4}],
- ['analogueWire','ANALOGUE / WIREFIELD','Crossed signal mesh shaped by the light in your footage',[],{density:48,hue:155,relief:.7,jitter:.08}]
+ ['analogueWire','ANALOGUE / WIREFIELD','Crossed signal mesh shaped by the light in your footage',[],{density:48,hue:155,relief:.7,jitter:.08}],
+ ['analogueRoseDust','ANALOGUE / ROSE DUST','Soft pink contours dissolving into fine rose phosphor grains',[
+  ['dissolve','Dissolution',0,1,.01,.82],['spread','Particle drift',0,1,.01,.15],['grain','Grain size',.3,2,.05,.7]
+ ],{density:125,hue:333,glow:.3,relief:.3,width:.85,jitter:.18}],
+ ['analogueNeonVeil','ANALOGUE / NEON VEIL','Violet signal contours inside a hot pink halo, with particle breakup',[
+  ['haloHue','Halo colour',0,360,1,325],['split','Colour separation',0,1,.01,.35],['dissolve','Dissolution',0,1,.01,.28]
+ ],{density:85,hue:258,glow:1.25,relief:.38,width:1.05,jitter:.4}],
+ ['analogueCoralWave','ANALOGUE / CORAL INTERFERENCE','Coral pink and violet wave interference with torn analogue bands',[
+  ['secondaryHue','Shadow colour',0,360,1,248],['interference','Interference depth',0,1,.01,.55],['frequency','Wave frequency',0,1,.01,.45]
+ ],{density:105,hue:345,glow:.25,relief:.3,width:1,jitter:.32}]
 ]) RITUAL_DEFS[id]={name,category:'Analogue',icon:'≋',subtitle,
  hint:'Analogue-inspired digital reconstruction from your footage’s brightness. Use a well-lit subject against a dark background for clean separation; this is not automatic background removal or a 3D scan. Speed 0 freezes signal noise. Strength mixes the original back in. The same processor is used for preview and export.',
  controls:[...analogueCommon.map(c=>{const a=[...c];if(c[0] in defaults)a[5]=defaults[c[0]];return a;}),...extra]};
 function analogueHash(x,y,seed){let n=(Math.imul(x+1,374761393)^Math.imul(y+1,668265263)^Math.imul(seed|0,1274126177))>>>0;n=Math.imul(n^(n>>>13),1274126177);return ((n^(n>>>16))>>>0)/4294967296;}
 function analogueDimensions(w,h,max){const k=Math.min(1,max/Math.max(w,h));return [Math.max(2,Math.round(w*k)),Math.max(2,Math.round(h*k))];}
 function drawAnalogueSignal(owner,c,source,w,h,time,p,id){
+ const rose=id==='analogueRoseDust',neon=id==='analogueNeonVeil',coral=id==='analogueCoralWave';
  const buffers=owner.analogueBuffers??={sample:makeCanvas(),ink:makeCanvas(),luma:null};
  const [sw,sh]=analogueDimensions(w,h,384),[rw,rh]=analogueDimensions(w,h,960);
  const sample=buffers.sample,ink=buffers.ink;
@@ -41,22 +51,30 @@ function drawAnalogueSignal(owner,c,source,w,h,time,p,id){
    const tear=Math.sin(v*39+clock*2.4+seed*.13)*Math.sin(v*113-clock*.8+seed*.07);
    let x=u*rw+(light-.15)*p.relief*rw*.115+p.jitter*rw*.014*tear;
    let y=v*rh+(axis?(light-.15)*p.relief*rh*.075:0);
-   const dissolved=id==='analogueDissolve'&&staticNoise<p.dissolve*(.18+.82*u);
-   if(dissolved){x+=p.spread*rw*.34*Math.pow(staticNoise, .5)*( .6+.4*Math.sin(clock*.7+noise*6));y+=(noise-.5)*p.spread*rh*.14;}
+   if(coral){const wave=Math.sin(v*(80+p.frequency*240)+clock*3+light*9+seed*.01);x+=p.interference*rw*.045*wave;}
+   const dissolved=(id==='analogueDissolve'||rose||neon)&&staticNoise<p.dissolve*(rose?.55+.45*u:.18+.82*u);
+   if(dissolved){const spread=neon?.12:p.spread;x+=spread*rw*.34*Math.pow(staticNoise, .5)*( .6+.4*Math.sin(clock*.7+noise*6));y+=(noise-.5)*spread*rh*.14;}
    const band=Math.min(7,Math.floor(Math.pow(value,.65)*8));
-   const broken=id==='analoguePhosphor'&&noise<p.jitter*.48;
+   const broken=(id==='analoguePhosphor'&&noise<p.jitter*.48)||(coral&&noise<p.interference*.24);
    if(broken){previous=null;continue;}
-   if(dissolved){const radius=Math.max(.45,p.width*.7)*(.5+noise);dots[band].moveTo(x+radius,y);dots[band].arc(x,y,radius,0,Math.PI*2);previous=null;}
+   if(dissolved){const radius=Math.max(.45,p.width*.7)*(.5+noise)*(rose?p.grain:1);dots[band].moveTo(x+radius,y);dots[band].arc(x,y,radius,0,Math.PI*2);previous=null;}
    else {if(previous){paths[band].moveTo(previous[0],previous[1]);paths[band].lineTo(x,y);}previous=[x,y];}
   }
  }
  const ic=ink.getContext('2d');ic.clearRect(0,0,rw,rh);ic.lineJoin='round';ic.lineCap='round';
- function strokes(hue,offset,alpha){ic.save();ic.translate(offset,0);ic.globalAlpha=alpha;for(let i=0;i<8;i++){ic.strokeStyle=ic.fillStyle=`hsl(${hue} 95% ${36+i*7}%)`;ic.lineWidth=p.width*(.55+i*.12);ic.stroke(paths[i]);ic.fill(dots[i]);}ic.restore();}
+ function strokes(hue,offset,alpha,ctx=ic){ctx.save();ctx.translate(offset,0);ctx.globalAlpha=alpha;for(let i=0;i<8;i++){const colour=coral?p.secondaryHue+(hue-p.secondaryHue)*i/7:hue;ctx.strokeStyle=ctx.fillStyle=`hsl(${colour} ${rose?70:95}% ${rose?48+i*5:36+i*7}%)`;ctx.lineWidth=p.width*(.55+i*.12);ctx.stroke(paths[i]);ctx.fill(dots[i]);}ctx.restore();}
  ic.globalCompositeOperation='screen';
  if(id==='analoguePhosphor'){strokes(p.hue-65,-p.rgb*5,.7);strokes(p.hue+90,p.rgb*5,.7);}
+ let glowInk=ink;
+ if(neon){
+  const halo=buffers.halo??=makeCanvas();if(halo.width!==rw||halo.height!==rh){halo.width=rw;halo.height=rh;}
+  const hc=halo.getContext('2d');hc.clearRect(0,0,rw,rh);hc.lineJoin=hc.lineCap='round';
+  strokes(p.haloHue,p.split*5,1,hc);glowInk=halo;strokes(p.haloHue,p.split*5,.65);
+ }
+ if(coral)strokes(p.secondaryHue,-p.interference*5,.6);
  strokes(p.hue,0,1);
  c.fillStyle='#010207';c.fillRect(0,0,w,h);c.save();c.globalCompositeOperation='screen';
- if(p.glow>0){c.globalAlpha=Math.min(1,p.glow*.7);c.filter=`blur(${Math.max(1,w/rw*7*p.glow)}px)`;c.drawImage(ink,0,0,w,h);c.globalAlpha=Math.min(1,p.glow);c.filter=`blur(${Math.max(.5,w/rw*2*p.glow)}px)`;c.drawImage(ink,0,0,w,h);}
+ if(p.glow>0){c.globalAlpha=Math.min(1,p.glow*.7);c.filter=`blur(${Math.max(1,w/rw*7*p.glow)}px)`;c.drawImage(glowInk,0,0,w,h);c.globalAlpha=Math.min(1,p.glow);c.filter=`blur(${Math.max(.5,w/rw*2*p.glow)}px)`;c.drawImage(glowInk,0,0,w,h);}
  c.filter='none';c.globalAlpha=1;c.drawImage(ink,0,0,w,h);c.restore();
  if(id==='analoguePhosphor'){c.save();c.fillStyle='#000';c.globalAlpha=.28;const pitch=Math.max(2,h/rh*3);for(let y=0;y<h;y+=pitch)c.fillRect(0,y,w,pitch*.25);c.restore();}
 }

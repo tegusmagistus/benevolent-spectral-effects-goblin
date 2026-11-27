@@ -1,7 +1,7 @@
 name: Verify Depth Lab effects
 on:
   push:
-    branches: [feature/depth-lab-012, feature/resizable-preview, feature/laptop-preview, feature/mobile-effects, feature/vertigo-flow, fix/fresh-start, feature/analogue-signals, main]
+    branches: [feature/depth-lab-012, feature/resizable-preview, feature/laptop-preview, feature/mobile-effects, feature/vertigo-flow, fix/fresh-start, feature/analogue-signals, feature/analogue-pink, main]
     paths:
       - 'public/deep-*'
       - 'public/preview-window.css'
