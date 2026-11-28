@@ -28,7 +28,7 @@ for(const [id,name,subtitle,extra,defaults] of [
  ],{density:105,hue:345,glow:.25,relief:.3,width:1,jitter:.32}]
 ]) RITUAL_DEFS[id]={name,category:'Analogue',icon:'≋',subtitle,
  hint:'Crisp detail preserves the subject with finer sampling, narrower lines and restrained glow. Quality: 1 Draft, 2 Fine, 3 Ultra (slower). Shape clarity reduces displacement and particle drift; Continuous lines reconnects broken/dotted traces. Edge definition sharpens brightness changes, but can also emphasise noise. These controls cannot recover detail absent from the source. Use a well-lit subject against a dark background. This is not background removal or a 3D scan. Speed 0 freezes signal noise. Preview and export use the same settings.',
- controls:[...analogueCommon.filter(c=>c[0]!=='continuity'||!['analogueContour','analogueWire'].includes(id)).map(c=>{const a=[...c];if(c[0] in defaults)a[5]=defaults[c[0]];return a;}),...extra]};
+ controls:[...analogueCommon.filter(c=>(c[0]!=='continuity'||!['analogueContour','analogueWire'].includes(id))&&(c[0]!=='orientation'||id!=='analogueWire')).map(c=>{const a=[...c];if(c[0] in defaults)a[5]=defaults[c[0]];return a;}),...extra]};
 function analogueHash(x,y,seed){let n=(Math.imul(x+1,374761393)^Math.imul(y+1,668265263)^Math.imul(seed|0,1274126177))>>>0;n=Math.imul(n^(n>>>13),1274126177);return ((n^(n>>>16))>>>0)/4294967296;}
 function analogueDimensions(w,h,max){const k=Math.min(1,max/Math.max(w,h));return [Math.max(2,Math.round(w*k)),Math.max(2,Math.round(h*k))];}
 function analogueSamplingPlan(w,h,quality=1){
