@@ -72,7 +72,7 @@ function drawAnalogueSignal(owner,c,source,w,h,time,p,id){
    const noise=analogueHash(line,j,seed+frame),staticNoise=analogueHash(line,j,seed);
    const tear=Math.sin(v*39+clock*2.4+seed*.13)*Math.sin(v*113-clock*.8+seed*.07);
    let x=u*rw+((light-.15)*p.relief*rw*.115+p.jitter*rw*.014*tear)*shape;
-   let y=v*rh+(horizontal?(light-.15)*p.relief*rh*.075*shape:0);
+   let y=v*rh+((horizontal||id==='analogueMeshOverlay')?(light-.15)*p.relief*rh*.075*shape:0);
    if(p.waveAmplitude){const wave=analogueWaveOffset(u,v,time,p);x+=wave[0]*rw;y+=wave[1]*rh;}
    if(coral){const wave=Math.sin(v*(80+p.frequency*240)+clock*3+light*9+seed*.01);x+=p.interference*rw*.045*wave*shape;}
    const dissolved=(id==='analogueDissolve'||rose||neon)&&staticNoise<p.dissolve*(rose?.55+.45*u:.18+.82*u)*(1-continuity);
