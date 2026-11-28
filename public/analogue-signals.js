@@ -4,6 +4,7 @@ const ANALOGUE_IDS = ['analogueContour','analoguePhosphor','analogueDissolve','a
 const analogueCommon = [
  ['detail','Detail quality',1,3,1,1],['clarity','Shape clarity',0,1,.01,0],
  ['edgeDetail','Fine edge definition',0,1,.01,0],['softness','Glow softness',0,1,.01,1],
+ ['orientation','Line orientation',0,1,1,0],['saturation','Colour saturation / monochrome',0,1,.01,1],
  ['continuity','Continuous lines',0,1,.01,0],
  ['density','Line density',24,320,1,90],['relief','Contour displacement',0,1,.01,.25],
  ['gate','Shadow cutoff',0,.65,.01,.12],['width','Line width',.3,2,.05,1.15],
@@ -36,6 +37,8 @@ function analogueSamplingPlan(w,h,quality=1){
 }
 function analogueCrispSettings(fx={}){return {detail:2,clarity:.8,edgeDetail:.45,softness:.2,continuity:1,density:Math.max(150,Math.min(320,Number(fx.density)||90)),width:.65,glow:Math.min(Number(fx.glow)||0,.45)};}
 function drawAnalogueSignal(owner,c,source,w,h,time,p,id){
+ if(id==='analogueOriginalWindow'){drawAnalogueWindow(owner,c,source,w,h,p);return;}
+ if(id==='analogueCyberGlyphs'){drawAnalogueGlyphs(c,w,h,time,p);return;}
  const rose=id==='analogueRoseDust',neon=id==='analogueNeonVeil',coral=id==='analogueCoralWave';
  const buffers=owner.analogueBuffers??={sample:makeCanvas(),ink:makeCanvas(),luma:null};
  const plan=analogueSamplingPlan(w,h,p.detail),[sw,sh]=plan.sample,[rw,rh]=plan.ink;
@@ -58,17 +61,19 @@ function drawAnalogueSignal(owner,c,source,w,h,time,p,id){
  const luminance=(u,v)=>{const x=Math.max(0,Math.min(sw-1,u*(sw-1))),y=Math.max(0,Math.min(sh-1,v*(sh-1)));const ix=Math.floor(x),iy=Math.floor(y),xx=Math.min(sw-1,ix+1),yy=Math.min(sh-1,iy+1),a=x-ix,b=y-iy;return (tones[iy*sw+ix]*(1-a)+tones[iy*sw+xx]*a)*(1-b)+(tones[yy*sw+ix]*(1-a)+tones[yy*sw+xx]*a)*b;};
  const clock=(Number.isFinite(time)?time:0)*p.speed,frame=Math.floor(clock*12),seed=p.seed|0;
  const paths=Array.from({length:8},()=>new Path2D()),dots=Array.from({length:8},()=>new Path2D());
- const passes=id==='analogueWire'?2:1,n=Math.round(p.density),steps=plan.steps;
+ const passes=(id==='analogueWire'||id==='analogueMeshOverlay')?2:1,n=Math.round(p.density),steps=plan.steps;
  for(let axis=0;axis<passes;axis++)for(let line=0;line<=n;line++){
   let previous=null;
   for(let j=0;j<=steps;j++){
-   const u=axis?j/steps:line/n,v=axis?line/n:j/steps;
+   const horizontal=axis===1||p.orientation===1;
+   const u=horizontal?j/steps:line/n,v=horizontal?line/n:j/steps;
    const light=luminance(u,v),value=Math.max(0,(light-p.gate)/(1-p.gate));
    if(value<.025){previous=null;continue;}
    const noise=analogueHash(line,j,seed+frame),staticNoise=analogueHash(line,j,seed);
    const tear=Math.sin(v*39+clock*2.4+seed*.13)*Math.sin(v*113-clock*.8+seed*.07);
    let x=u*rw+((light-.15)*p.relief*rw*.115+p.jitter*rw*.014*tear)*shape;
-   let y=v*rh+(axis?(light-.15)*p.relief*rh*.075*shape:0);
+   let y=v*rh+(horizontal?(light-.15)*p.relief*rh*.075*shape:0);
+   if(p.waveAmplitude){const wave=analogueWaveOffset(u,v,time,p);x+=wave[0]*rw;y+=wave[1]*rh;}
    if(coral){const wave=Math.sin(v*(80+p.frequency*240)+clock*3+light*9+seed*.01);x+=p.interference*rw*.045*wave*shape;}
    const dissolved=(id==='analogueDissolve'||rose||neon)&&staticNoise<p.dissolve*(rose?.55+.45*u:.18+.82*u)*(1-continuity);
    if(dissolved){const spread=(neon?.12:p.spread)*shape;x+=spread*rw*.34*Math.pow(staticNoise, .5)*( .6+.4*Math.sin(clock*.7+noise*6));y+=(noise-.5)*spread*rh*.14;}
@@ -80,7 +85,7 @@ function drawAnalogueSignal(owner,c,source,w,h,time,p,id){
   }
  }
  const ic=ink.getContext('2d');ic.clearRect(0,0,rw,rh);ic.lineJoin='round';ic.lineCap='round';
- function strokes(hue,offset,alpha,ctx=ic){ctx.save();ctx.translate(offset,0);ctx.globalAlpha=alpha;for(let i=0;i<8;i++){const colour=coral?p.secondaryHue+(hue-p.secondaryHue)*i/7:hue;ctx.strokeStyle=ctx.fillStyle=`hsl(${colour} ${rose?70:95}% ${rose?48+i*5:36+i*7}%)`;ctx.lineWidth=p.width*(.55+i*.12);ctx.stroke(paths[i]);ctx.fill(dots[i]);}ctx.restore();}
+ function strokes(hue,offset,alpha,ctx=ic){ctx.save();ctx.translate(offset,0);ctx.globalAlpha=alpha;for(let i=0;i<8;i++){const colour=coral?p.secondaryHue+(hue-p.secondaryHue)*i/7:hue;ctx.strokeStyle=ctx.fillStyle=`hsl(${colour} ${(rose?70:95)*(p.saturation??1)}% ${rose?48+i*5:36+i*7}%)`;ctx.lineWidth=p.width*(.55+i*.12);ctx.stroke(paths[i]);ctx.fill(dots[i]);}ctx.restore();}
  ic.globalCompositeOperation='screen';
  if(id==='analoguePhosphor'){strokes(p.hue-65,-p.rgb*5*shape,.7);strokes(p.hue+90,p.rgb*5*shape,.7);}
  let glowInk=ink;
@@ -91,7 +96,8 @@ function drawAnalogueSignal(owner,c,source,w,h,time,p,id){
  }
  if(coral)strokes(p.secondaryHue,-p.interference*5*shape,.6);
  strokes(p.hue,0,1);
- c.fillStyle='#010207';c.fillRect(0,0,w,h);c.save();c.globalCompositeOperation='screen';
+ if(p.echoCopies){const ec=buffers.echo??=makeCanvas();if(ec.width!==rw||ec.height!==rh){ec.width=rw;ec.height=rh;}const ex=ec.getContext('2d');ex.clearRect(0,0,rw,rh);const angle=(p.waveDirection||0)*Math.PI/180;for(let i=Math.round(p.echoCopies);i>0;i--){ex.globalAlpha=Math.pow(p.echoDecay,i);ex.drawImage(ink,Math.cos(angle)*i*p.echoSpacing*rw*.09,Math.sin(angle)*i*p.echoSpacing*rh*.09);}ex.globalAlpha=1;ic.drawImage(ec,0,0);}
+ c.fillStyle=(p.saturation??1)===0?'#020202':'#010207';c.fillRect(0,0,w,h);if(p.backgroundMix){c.save();c.globalAlpha=p.backgroundMix;c.drawImage(source,0,0,w,h);c.restore();}c.save();c.globalCompositeOperation='screen';
  const softness=.1+.9*(p.softness??1);
  if(p.glow>0){c.globalAlpha=Math.min(1,p.glow*.7);c.filter=`blur(${Math.max(1,w/rw*7*p.glow*softness)}px)`;c.drawImage(glowInk,0,0,w,h);c.globalAlpha=Math.min(1,p.glow);c.filter=`blur(${Math.max(.5,w/rw*2*p.glow*softness)}px)`;c.drawImage(glowInk,0,0,w,h);}
  c.filter='none';c.globalAlpha=1;c.drawImage(ink,0,0,w,h);c.restore();
